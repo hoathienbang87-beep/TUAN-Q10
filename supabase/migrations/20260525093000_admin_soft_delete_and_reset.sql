@@ -211,6 +211,7 @@ begin
     delete from public.products;
   elsif p_scope = 'customers' then
     delete from public.payments;
+    delete from public.stock_movements where order_id is not null;
     delete from public.order_items;
     delete from public.orders;
     delete from public.customer_activities;

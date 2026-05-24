@@ -931,7 +931,9 @@ function App() {
       return true;
     } catch (error) {
       console.error("Lỗi xoá mềm dữ liệu:", error);
-      setErrorMessage("Không xoá mềm được dữ liệu. Kiểm tra migration/RLS.");
+      setErrorMessage(
+        `Không xoá mềm được dữ liệu: ${getSupabaseErrorMessage(error)}`
+      );
       return false;
     } finally {
       setAdminSaving(false);
@@ -961,7 +963,9 @@ function App() {
       return true;
     } catch (error) {
       console.error("Lỗi reset dữ liệu:", error);
-      setErrorMessage("Không reset được dữ liệu. Kiểm tra quyền admin hoặc migration RPC.");
+      setErrorMessage(
+        `Không reset được dữ liệu: ${getSupabaseErrorMessage(error)}`
+      );
       return false;
     } finally {
       setAdminSaving(false);
@@ -1154,6 +1158,30 @@ function App() {
       {renderPage()}
     </AppLayout>
   );
+}
+
+function getSupabaseErrorMessage(error) {
+  if (!error) {
+    return "Không rõ nguyên nhân.";
+  }
+
+  if (error.message === "Only admin can hard reset business data") {
+    return "tài khoản hiện tại chưa có quyền admin trong bảng profiles.";
+  }
+
+  if (error.message === "Authentication required") {
+    return "phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.";
+  }
+
+  if (error.message?.includes("Could not find the function")) {
+    return "chưa chạy migration RPC trên Supabase.";
+  }
+
+  if (error.message?.includes("violates foreign key constraint")) {
+    return "dữ liệu đang có liên kết khóa ngoại, cần chạy bản migration reset mới nhất.";
+  }
+
+  return error.message || error.details || "Không rõ nguyên nhân.";
 }
 
 export default App;
