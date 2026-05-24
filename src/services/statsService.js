@@ -2,9 +2,18 @@ import { supabase } from "../supabaseClient";
 
 export async function getStats() {
   const [productsResult, customersResult, ordersResult] = await Promise.all([
-    supabase.from("products").select("id", { count: "exact", head: true }),
-    supabase.from("customers").select("id", { count: "exact", head: true }),
-    supabase.from("orders").select("id", { count: "exact", head: true }),
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .is("deleted_at", null),
+    supabase
+      .from("customers")
+      .select("id", { count: "exact", head: true })
+      .is("deleted_at", null),
+    supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .is("deleted_at", null),
   ]);
 
   if (productsResult.error) {

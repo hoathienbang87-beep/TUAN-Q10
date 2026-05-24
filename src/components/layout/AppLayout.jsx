@@ -193,6 +193,14 @@ function getMenuItemsByRole(role) {
     });
   }
 
+  if (["admin", "manager"].includes(role)) {
+    baseMenu.push({
+      key: "admin",
+      label: "Quản trị",
+      icon: "🛡️",
+    });
+  }
+
   if (role === "warehouse") {
     return baseMenu.filter((item) =>
       ["dashboard", "products", "orders", "stock"].includes(item.key)
@@ -213,6 +221,7 @@ function getPageTitle(activePage) {
     payments: "Công nợ",
     stock: "Kho",
     staff: "Nhân sự",
+    admin: "Quản trị",
   };
 
   return titles[activePage] || "Dashboard";

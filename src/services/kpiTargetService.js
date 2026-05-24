@@ -12,6 +12,7 @@ export async function getKpiTargets({ page = 0, pageSize = DEFAULT_PAGE_SIZE } =
   const { data, error } = await supabase
     .from("kpi_targets")
     .select(KPI_TARGET_SELECT)
+    .is("deleted_at", null)
     .order("target_month", { ascending: false })
     .range(from, to);
 
@@ -30,6 +31,7 @@ export async function saveKpiTarget(payload) {
     .select("id")
     .eq("sale_id", sale_id)
     .eq("target_month", target_month)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (findError) {

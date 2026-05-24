@@ -177,9 +177,9 @@ function KpiPage({
         </div>
       </section>
 
-      <div className={canManageTargets ? "module-grid" : ""}>
+      <div className={canManageTargets ? "module-grid paired-panels" : ""}>
         {canManageTargets && (
-          <section className="card">
+          <section className="card paired-panel">
             <div className="section-header">
               <div>
                 <h2>Đặt chỉ tiêu tháng</h2>
@@ -290,7 +290,7 @@ function KpiPage({
           </section>
         )}
 
-        <section className="card">
+        <section className={canManageTargets ? "card paired-panel" : "card"}>
           <div className="section-header">
             <div>
               <h2>KPI tháng</h2>
@@ -320,11 +320,13 @@ function KpiPage({
             <span className="badge">{filteredKpis.length} dòng</span>
           </div>
 
-          <KpiTable
-            items={filteredKpis}
-            canManageTargets={canManageTargets}
-            onEditTarget={startEditTarget}
-          />
+          <div className={canManageTargets ? "paired-scroll-body" : ""}>
+            <KpiTable
+              items={filteredKpis}
+              canManageTargets={canManageTargets}
+              onEditTarget={startEditTarget}
+            />
+          </div>
         </section>
       </div>
     </div>

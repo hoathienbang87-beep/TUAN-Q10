@@ -4,6 +4,8 @@ import {
   formatDateTime,
   formatNumber,
 } from "../../utils/format";
+import { matchesSearchText } from "../../utils/search";
+import ProductSearchSelect from "../products/ProductSearchSelect";
 
 function StockPage({
   profile,
@@ -30,19 +32,23 @@ function StockPage({
   );
 
   const filteredProducts = useMemo(() => {
-    const keyword = searchText.trim().toLowerCase();
+    const keyword = searchText.trim();
 
     if (!keyword) {
       return products;
     }
 
     return products.filter((product) => {
-      return (
-        product.code?.toLowerCase().includes(keyword) ||
-        product.name?.toLowerCase().includes(keyword) ||
-        product.category?.toLowerCase().includes(keyword) ||
-        product.size?.toLowerCase().includes(keyword) ||
-        product.surface?.toLowerCase().includes(keyword)
+      return matchesSearchText(
+        [
+          product.code,
+          product.name,
+          product.category,
+          product.size,
+          product.surface,
+          product.origin,
+        ],
+        keyword
       );
     });
   }, [products, searchText]);
@@ -117,20 +123,12 @@ function StockPage({
             <form className="customer-form" onSubmit={handleSubmit}>
               <div className="field">
                 <label>Sản phẩm *</label>
-                <select
+                <ProductSearchSelect
+                  products={products}
                   value={movementForm.product_id}
-                  onChange={(event) =>
-                    updateMovementField("product_id", event.target.value)
-                  }
-                  required
-                >
-                  <option value="">Chọn sản phẩm</option>
-                  {products.map((product) => (
-                    <option key={product.id} value={product.id}>
-                      {product.code} - {product.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(productId) => updateMovementField("product_id", productId)}
+                  placeholder="Gõ mã, tên, loại, kích thước..."
+                />
               </div>
 
               {selectedProduct && (

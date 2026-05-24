@@ -33,6 +33,7 @@ export async function getOrders({ page = 0, pageSize = DEFAULT_PAGE_SIZE } = {})
   const { data, error } = await supabase
     .from("orders")
     .select(ORDER_SELECT)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .range(from, to);
 

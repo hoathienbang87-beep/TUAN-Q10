@@ -12,6 +12,7 @@ export async function getPayments({ page = 0, pageSize = DEFAULT_PAGE_SIZE } = {
   const { data, error } = await supabase
     .from("payments")
     .select(PAYMENT_SELECT)
+    .is("deleted_at", null)
     .order("payment_date", { ascending: false })
     .order("created_at", { ascending: false })
     .range(from, to);

@@ -3,6 +3,7 @@ import {
   PRODUCT_CATEGORY_OPTIONS,
   PRODUCT_STATUS_OPTIONS,
 } from "../../constants/appConstants";
+import { matchesSearchText } from "../../utils/search";
 import ProductTable from "./ProductTable";
 
 function ProductsPage({
@@ -33,20 +34,23 @@ function ProductsPage({
   const [searchText, setSearchText] = useState("");
 
   const filteredProducts = useMemo(() => {
-    const keyword = searchText.trim().toLowerCase();
+    const keyword = searchText.trim();
 
     if (!keyword) {
       return products;
     }
 
     return products.filter((product) => {
-      return (
-        product.code?.toLowerCase().includes(keyword) ||
-        product.name?.toLowerCase().includes(keyword) ||
-        product.category?.toLowerCase().includes(keyword) ||
-        product.size?.toLowerCase().includes(keyword) ||
-        product.surface?.toLowerCase().includes(keyword) ||
-        product.origin?.toLowerCase().includes(keyword)
+      return matchesSearchText(
+        [
+          product.code,
+          product.name,
+          product.category,
+          product.size,
+          product.surface,
+          product.origin,
+        ],
+        keyword
       );
     });
   }, [products, searchText]);
@@ -92,8 +96,8 @@ function ProductsPage({
   }
 
   return (
-    <div className="module-grid">
-      <section className="card">
+    <div className="module-grid paired-panels">
+      <section className="card paired-panel">
         <div className="section-header">
           <div>
             <h2>{editingProductId ? "Sửa sản phẩm" : "Thêm sản phẩm"}</h2>
@@ -269,7 +273,7 @@ function ProductsPage({
         )}
       </section>
 
-      <section className="card">
+      <section className="card paired-panel">
         <div className="section-header">
           <div>
             <h2>Danh sách sản phẩm gạch</h2>
@@ -293,11 +297,13 @@ function ProductsPage({
           <span className="badge">{filteredProducts.length} sản phẩm</span>
         </div>
 
-        <ProductTable
-          products={filteredProducts}
-          canManageProducts={canManageProducts}
-          onEditProduct={startEditProduct}
-        />
+        <div className="paired-scroll-body">
+          <ProductTable
+            products={filteredProducts}
+            canManageProducts={canManageProducts}
+            onEditProduct={startEditProduct}
+          />
+        </div>
       </section>
     </div>
   );

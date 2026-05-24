@@ -13,6 +13,7 @@ import StockPage from "./components/stock/StockPage";
 import PaymentsPage from "./components/payments/PaymentsPage";
 import ReportsPage from "./components/reports/ReportsPage";
 import KpiPage from "./components/kpi/KpiPage";
+import AdminPage from "./components/admin/AdminPage";
 
 import {
   getCurrentSession,
@@ -63,6 +64,10 @@ import {
 } from "./services/kpiTargetService";
 
 import { getStats } from "./services/statsService";
+import {
+  hardResetBusinessData,
+  softDeleteBusinessData,
+} from "./services/adminService";
 
 
 
@@ -100,6 +105,7 @@ function App() {
   const [stockSaving, setStockSaving] = useState(false);
   const [paymentSaving, setPaymentSaving] = useState(false);
   const [kpiTargetSaving, setKpiTargetSaving] = useState(false);
+  const [adminSaving, setAdminSaving] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -878,6 +884,90 @@ function App() {
     await loadKpiTargets();
   }
 
+  async function reloadAllBusinessData() {
+    await Promise.all([
+      loadProducts(),
+      loadCustomers(),
+      loadActivities(),
+      loadOrders(),
+      loadStats(),
+      loadStaffProfiles(),
+      loadStockMovements(),
+      loadKpiTargets(),
+      loadPayments(),
+    ]);
+  }
+
+  async function handleSoftDeleteScope(scope, confirmation) {
+    const labels = {
+      customers: "Khách hàng",
+      products: "Sản phẩm",
+      orders: "Đơn hàng",
+      payments: "Công nợ / thanh toán",
+      stock: "Kho",
+      activities: "Chăm sóc KH",
+      kpi: "KPI",
+    };
+
+    if (!["admin", "manager"].includes(profile?.role)) {
+      setErrorMessage("Chỉ admin hoặc manager được xoá mềm dữ liệu.");
+      return false;
+    }
+
+    if (confirmation !== labels[scope]) {
+      setErrorMessage("Bạn cần gõ đúng tên mục để xác nhận xoá mềm.");
+      return false;
+    }
+
+    setAdminSaving(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      await softDeleteBusinessData(scope);
+      await reloadAllBusinessData();
+
+      setSuccessMessage(`Đã xoá mềm mục ${labels[scope]}.`);
+      return true;
+    } catch (error) {
+      console.error("Lỗi xoá mềm dữ liệu:", error);
+      setErrorMessage("Không xoá mềm được dữ liệu. Kiểm tra migration/RLS.");
+      return false;
+    } finally {
+      setAdminSaving(false);
+    }
+  }
+
+  async function handleHardResetScope(scope, confirmation) {
+    if (profile?.role !== "admin") {
+      setErrorMessage("Chỉ admin được reset xoá cứng dữ liệu.");
+      return false;
+    }
+
+    if (confirmation !== "RESET DATA") {
+      setErrorMessage("Bạn cần gõ RESET DATA để xác nhận xoá cứng.");
+      return false;
+    }
+
+    setAdminSaving(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+
+    try {
+      await hardResetBusinessData(scope, confirmation);
+      await reloadAllBusinessData();
+
+      setSuccessMessage("Đã reset xoá cứng dữ liệu theo phạm vi đã chọn.");
+      return true;
+    } catch (error) {
+      console.error("Lỗi reset dữ liệu:", error);
+      setErrorMessage("Không reset được dữ liệu. Kiểm tra quyền admin hoặc migration RPC.");
+      return false;
+    } finally {
+      setAdminSaving(false);
+    }
+  }
+
   function renderPage() {
     if (activePage === "dashboard") {
       return (
@@ -1000,6 +1090,26 @@ function App() {
           staffSaving={staffSaving}
           onUpdateStaffProfile={handleUpdateStaffProfile}
           onReloadStaffProfiles={handleReloadStaffProfiles}
+        />
+      );
+    }
+
+    if (activePage === "admin") {
+      return (
+        <AdminPage
+          profile={profile}
+          counts={{
+            customers: customers.length,
+            products: products.length,
+            orders: orders.length,
+            payments: payments.length,
+            stock: stockMovements.length,
+            activities: activities.length,
+            kpi: kpiTargets.length,
+          }}
+          adminSaving={adminSaving}
+          onSoftDeleteScope={handleSoftDeleteScope}
+          onHardResetScope={handleHardResetScope}
         />
       );
     }

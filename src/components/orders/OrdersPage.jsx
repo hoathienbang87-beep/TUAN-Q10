@@ -6,6 +6,7 @@ import {
   formatNumber,
   getOrderStatusLabel,
 } from "../../utils/format";
+import ProductSearchSelect from "../products/ProductSearchSelect";
 
 function OrdersPage({
   profile,
@@ -246,17 +247,12 @@ function OrdersPage({
 
                 <div className="field">
                   <label>Sản phẩm</label>
-                  <select
+                  <ProductSearchSelect
+                    products={activeProducts}
                     value={itemForm.product_id}
-                    onChange={(event) => chooseProduct(event.target.value)}
-                  >
-                    <option value="">Chọn sản phẩm</option>
-                    {activeProducts.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.code} - {product.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={chooseProduct}
+                    placeholder="Gõ mã, tên, loại, kích thước..."
+                  />
                 </div>
 
                 <div className="form-grid">
@@ -294,7 +290,7 @@ function OrdersPage({
                 )}
 
                 <button
-                  className="secondary-btn"
+                  className="primary-btn full-width-btn"
                   type="button"
                   onClick={addDraftItem}
                 >

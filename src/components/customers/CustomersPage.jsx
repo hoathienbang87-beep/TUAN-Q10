@@ -119,8 +119,8 @@ function CustomersPage({
 
   return (
     <div className="customer-page-stack">
-      <div className="module-grid">
-        <section className="card">
+      <div className="module-grid paired-panels customer-panels">
+        <section className="card paired-panel customer-panel">
           <div className="section-header">
             <div>
               <h2>Thêm khách hàng</h2>
@@ -203,7 +203,7 @@ function CustomersPage({
           </form>
         </section>
 
-        <section className="card">
+        <section className="card paired-panel customer-panel">
           <div className="section-header">
             <div>
               <h2>Danh sách khách hàng</h2>
@@ -227,12 +227,14 @@ function CustomersPage({
             <span className="badge">{filteredCustomers.length} khách</span>
           </div>
 
-          <CustomerTable
-            customers={filteredCustomers}
-            selectedCustomerId={activityForm.customer_id}
-            onSelectCustomer={selectCustomerForCare}
-            onUpdateCustomerStatus={onUpdateCustomerStatus}
-          />
+          <div className="paired-scroll-body">
+            <CustomerTable
+              customers={filteredCustomers}
+              selectedCustomerId={activityForm.customer_id}
+              onSelectCustomer={selectCustomerForCare}
+              onUpdateCustomerStatus={onUpdateCustomerStatus}
+            />
+          </div>
         </section>
       </div>
 

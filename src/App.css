@@ -139,6 +139,8 @@ p {
   outline: none;
   font-size: 14px;
   background: white;
+  width: 100%;
+  min-width: 0;
 }
 
 .login-form input,
@@ -191,6 +193,12 @@ p {
   align-self: flex-start;
 }
 
+.full-width-btn {
+  width: 100%;
+  align-self: stretch;
+  justify-content: center;
+}
+
 .secondary-btn {
   height: 42px;
   border-radius: 12px;
@@ -223,6 +231,23 @@ p {
   color: var(--danger);
   padding: 0 10px;
   font-size: 12px;
+}
+
+.danger-btn {
+  min-height: 44px;
+  border: 1px solid #fecdd3;
+  border-radius: 12px;
+  background: #fff1f2;
+  color: #be123c;
+  padding: 0 18px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.danger-btn.solid {
+  border-color: #be123c;
+  background: #be123c;
+  color: white;
 }
 
 /* =========================
@@ -445,7 +470,7 @@ p {
 
 .module-grid {
   display: grid;
-  grid-template-columns: 420px 1fr;
+  grid-template-columns: minmax(500px, 0.42fr) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
@@ -455,10 +480,14 @@ p {
 }
 
 .paired-panel {
-  height: clamp(540px, calc(100vh - 178px), 720px);
+  height: clamp(740px, calc(100vh - 118px), 940px);
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.customer-panel {
+  height: clamp(820px, calc(100vh - 118px), 1040px);
 }
 
 .paired-panel .section-header {
@@ -476,8 +505,8 @@ p {
 }
 
 .paired-panel > .customer-form {
-  overflow-y: auto;
-  padding-right: 4px;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .paired-scroll-body {
@@ -548,7 +577,7 @@ p {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -556,6 +585,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 7px;
+  min-width: 0;
 }
 
 .field textarea {
@@ -564,11 +594,103 @@ p {
   line-height: 1.5;
 }
 
+.product-search-select {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.product-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.product-search-input-wrap input {
+  padding-right: 42px;
+}
+
+.product-search-input-wrap button {
+  position: absolute;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.selected-product-card {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid #a5f3fc;
+  border-radius: 12px;
+  background: #ecfeff;
+}
+
+.selected-product-card small {
+  color: var(--muted);
+}
+
+.product-search-results {
+  position: absolute;
+  z-index: 30;
+  top: 46px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+}
+
+.product-search-results button {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: #f8fbff;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+}
+
+.product-search-results button:hover {
+  background: #ecfeff;
+  transform: none;
+}
+
+.product-search-results small,
+.product-search-empty {
+  color: var(--muted);
+}
+
+.product-search-empty {
+  padding: 14px;
+}
+
 .form-actions {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 /* =========================
@@ -986,6 +1108,8 @@ tr:hover td {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
+  overflow: visible;
 }
 
 .order-item-box h3 {
@@ -1007,6 +1131,7 @@ tr:hover td {
   border: 1px solid var(--border);
   border-radius: 14px;
   background: white;
+  min-width: 0;
 }
 
 .draft-item p {
@@ -1021,6 +1146,7 @@ tr:hover td {
   align-items: flex-end;
   gap: 6px;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .order-total-box {
@@ -1064,7 +1190,12 @@ tr:hover td {
   }
 
   .paired-panel {
-    height: min(620px, 72vh);
+    height: auto;
+    min-height: 720px;
+  }
+
+  .customer-panel {
+    min-height: 820px;
   }
 }
 
@@ -1299,8 +1430,12 @@ tr:hover td {
   }
 
   .paired-panel {
-    height: 68vh;
-    min-height: 460px;
+    height: auto;
+    min-height: 720px;
+  }
+
+  .customer-panel {
+    min-height: 820px;
   }
 
   .fixed-history-body {
@@ -1513,4 +1648,100 @@ tr:hover td {
 
 .kpi-progress-cell small {
   color: #6b7280;
+}
+
+/* =========================
+   ADMIN
+========================= */
+
+.admin-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.admin-overview-panel,
+.admin-action-panel {
+  border-color: rgba(15, 118, 110, 0.18);
+}
+
+.admin-count-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.admin-count-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  background: #f8fbff;
+}
+
+.admin-count-card span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-count-card strong {
+  color: #0f766e;
+  font-size: 24px;
+}
+
+.admin-warning-box {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border-radius: 14px;
+}
+
+.admin-warning-box p,
+.admin-warning-box small {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-warning-box small {
+  color: var(--muted);
+}
+
+.admin-warning-box.soft {
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.admin-warning-box.hard {
+  border: 1px solid #fecdd3;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.danger-panel {
+  border-color: #fecdd3;
+}
+
+@media (max-width: 1200px) {
+  .admin-count-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-count-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }

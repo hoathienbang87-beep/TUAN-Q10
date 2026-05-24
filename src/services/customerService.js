@@ -12,6 +12,7 @@ export async function getCustomers({ page = 0, pageSize = DEFAULT_PAGE_SIZE } = 
   const { data, error } = await supabase
     .from("customers")
     .select(CUSTOMER_SELECT)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .range(from, to);
 

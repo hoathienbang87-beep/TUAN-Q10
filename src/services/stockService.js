@@ -12,6 +12,7 @@ export async function getStockMovements({ page = 0, pageSize = DEFAULT_PAGE_SIZE
   const { data, error } = await supabase
     .from("stock_movements")
     .select(STOCK_MOVEMENT_SELECT)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .range(from, to);
 

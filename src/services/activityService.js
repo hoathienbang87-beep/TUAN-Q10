@@ -12,6 +12,7 @@ export async function getActivities({ page = 0, pageSize = DEFAULT_PAGE_SIZE } =
   const { data, error } = await supabase
     .from("customer_activities")
     .select(ACTIVITY_SELECT)
+    .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .range(from, to);
 
