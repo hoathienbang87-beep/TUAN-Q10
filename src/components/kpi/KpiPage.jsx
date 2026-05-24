@@ -303,7 +303,7 @@ function KpiPage({
           </div>
 
           <div className="info-box">
-            <strong>Cách đọc KPI 17B:</strong>
+            <strong>Cách đọc KPI:</strong>
             <p>
               Dữ liệu thực tế lấy theo tháng từ khách hàng, chăm sóc và đơn hàng.
               Chỉ tiêu do admin/manager nhập theo từng sale.

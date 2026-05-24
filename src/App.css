@@ -1220,11 +1220,15 @@ tr:hover td {
 
   .topbar {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 56px minmax(0, 1fr);
     align-items: center;
   }
 
   .hamburger-btn {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: calc(env(safe-area-inset-left, 0px) + 14px);
+    z-index: 35;
     width: 44px;
     height: 44px;
     border: none;
@@ -1237,6 +1241,11 @@ tr:hover td {
     align-items: center;
     justify-content: center;
     gap: 5px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+  }
+
+  .topbar-title {
+    grid-column: 2;
   }
 
   .hamburger-btn:hover {
