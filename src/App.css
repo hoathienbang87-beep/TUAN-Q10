@@ -3,27 +3,34 @@
 }
 
 :root {
-  --bg: #f4f5f7;
+  --bg: #eef4f8;
   --card: #ffffff;
   --text: #111827;
   --muted: #6b7280;
-  --border: #e5e7eb;
-  --soft: #f9fafb;
-  --dark: #111827;
-  --dark-soft: #1f2937;
-  --danger: #b91c1c;
-  --success: #7ccfb7;
-  --warning: #92400e;
-  --blue: #1d4ed8;
-  --purple: #6d28d9;
+  --border: #d9e2ec;
+  --soft: #f6f9fc;
+  --dark: #162033;
+  --dark-soft: #22324a;
+  --danger: #be123c;
+  --success: #047857;
+  --warning: #b45309;
+  --blue: #2563eb;
+  --purple: #7c3aed;
+  --teal: #0f766e;
+  --cyan: #0891b2;
+  --rose: #e11d48;
+  --amber: #d97706;
+  --accent: #0f766e;
   --radius: 18px;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --shadow: 0 12px 30px rgba(30, 41, 59, 0.1);
 }
 
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, #f8fbff 0%, var(--bg) 360px),
+    var(--bg);
   color: var(--text);
 }
 
@@ -75,6 +82,7 @@ p {
 
 .card {
   background: var(--card);
+  border: 1px solid rgba(217, 226, 236, 0.9);
   border-radius: var(--radius);
   padding: 24px;
   box-shadow: var(--shadow);
@@ -92,7 +100,7 @@ p {
   width: 54px;
   height: 54px;
   border-radius: 18px;
-  background: var(--dark);
+  background: #0f766e;
   color: white;
   display: flex;
   align-items: center;
@@ -147,7 +155,8 @@ p {
 .field textarea:focus,
 .list-toolbar input:focus,
 .table-select:focus {
-  border-color: var(--dark);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
 }
 
 /* =========================
@@ -169,7 +178,7 @@ p {
 .primary-btn {
   height: 44px;
   border-radius: 12px;
-  background: var(--dark);
+  background: #0f766e;
   color: white;
   padding: 0 18px;
 }
@@ -185,8 +194,8 @@ p {
 .secondary-btn {
   height: 42px;
   border-radius: 12px;
-  background: #f3f4f6;
-  color: var(--dark);
+  background: #e0f2fe;
+  color: #075985;
   padding: 0 16px;
 }
 
@@ -201,7 +210,7 @@ p {
 .mini-btn {
   height: 34px;
   border-radius: 10px;
-  background: var(--dark);
+  background: #1d4ed8;
   color: white;
   padding: 0 12px;
   font-size: 13px;
@@ -251,7 +260,7 @@ p {
 }
 
 .sidebar {
-  background: var(--dark);
+  background: linear-gradient(180deg, #14213d 0%, #102a43 52%, #163b45 100%);
   color: white;
   padding: 24px;
 }
@@ -268,7 +277,7 @@ p {
   height: 44px;
   border-radius: 14px;
   background: white;
-  color: var(--dark);
+  color: #0f766e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -310,9 +319,13 @@ p {
 
 .menu-item:hover,
 .menu-item.active {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(204, 251, 241, 0.16);
   color: white;
   transform: none;
+}
+
+.menu-item.active {
+  box-shadow: inset 4px 0 0 #5eead4;
 }
 
 .main-content {
@@ -353,6 +366,7 @@ p {
   align-items: center;
   gap: 16px;
   background: white;
+  border: 1px solid rgba(217, 226, 236, 0.9);
   padding: 12px 14px;
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
@@ -377,9 +391,32 @@ p {
 
 .stat-card {
   background: white;
+  border: 1px solid rgba(217, 226, 236, 0.9);
   border-radius: var(--radius);
   padding: 20px;
+  position: relative;
+  overflow: hidden;
   box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 6px;
+  background: #0f766e;
+}
+
+.stat-card:nth-child(2)::before {
+  background: #2563eb;
+}
+
+.stat-card:nth-child(3)::before {
+  background: #d97706;
+}
+
+.stat-card:nth-child(4)::before {
+  background: #7c3aed;
 }
 
 .stat-card p {
@@ -437,8 +474,8 @@ p {
   height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  background: #f3f4f6;
-  color: #374151;
+  background: #eef2ff;
+  color: #3730a3;
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -501,6 +538,7 @@ p {
   border: 1px solid var(--border);
   border-radius: 14px;
   background: white;
+  box-shadow: 0 8px 22px rgba(30, 41, 59, 0.05);
 }
 
 table {
@@ -520,20 +558,20 @@ td {
 }
 
 th {
-  background: var(--soft);
+  background: #e0f2fe;
   font-weight: 700;
-  color: #374151;
+  color: #0f172a;
   position: sticky;
   top: 0;
   z-index: 1;
 }
 
 tbody tr:nth-child(even):not(.table-group-row) td {
-  background: #fbfdff;
+  background: #f8fbff;
 }
 
 tr:hover td {
-  background: var(--soft);
+  background: #ecfeff;
 }
 
 .selected-row td {
@@ -541,8 +579,8 @@ tr:hover td {
 }
 
 .table-group-row td {
-  background: #e5e7eb !important;
-  border-bottom-color: #d1d5db;
+  background: #dbeafe !important;
+  border-bottom-color: #bfdbfe;
   padding: 10px 14px;
 }
 
@@ -592,7 +630,7 @@ tr:hover td {
   padding: 0 9px;
   border-radius: 999px;
   background: white;
-  color: #374151;
+  color: #1e3a8a;
   font-size: 12px;
   font-weight: 700;
 }
@@ -619,8 +657,8 @@ tr:hover td {
 ========================= */
 
 .empty-state {
-  background: var(--soft);
-  border: 1px dashed #d1d5db;
+  background: #f8fafc;
+  border: 1px dashed #93c5fd;
   border-radius: 16px;
   padding: 28px;
   margin-top: 16px;
@@ -656,6 +694,7 @@ tr:hover td {
   border-radius: 14px;
   border: 1px solid var(--border);
   background: white;
+  box-shadow: 0 4px 14px rgba(30, 41, 59, 0.04);
 }
 
 .mini-list-item p {
@@ -687,7 +726,7 @@ tr:hover td {
 }
 
 .status-new {
-  background: #eff6ff;
+  background: #dbeafe;
   color: var(--blue);
 }
 
@@ -697,17 +736,17 @@ tr:hover td {
 }
 
 .status-quoted {
-  background: #f5f3ff;
+  background: #ede9fe;
   color: var(--purple);
 }
 
 .status-won {
-  background: #ecfdf5;
+  background: #d1fae5;
   color: var(--success);
 }
 
 .status-lost {
-  background: #fef2f2;
+  background: #ffe4e6;
   color: var(--danger);
 }
 
@@ -717,7 +756,7 @@ tr:hover td {
 }
 
 .order-status-confirmed {
-  background: #eff6ff;
+  background: #dbeafe;
   color: var(--blue);
 }
 
@@ -727,12 +766,12 @@ tr:hover td {
 }
 
 .order-status-completed {
-  background: #ecfdf5;
+  background: #d1fae5;
   color: var(--success);
 }
 
 .order-status-cancelled {
-  background: #fef2f2;
+  background: #ffe4e6;
   color: var(--danger);
 }
 
@@ -763,7 +802,7 @@ tr:hover td {
   width: 12px;
   height: 12px;
   border-radius: 999px;
-  background: var(--dark);
+  background: #0f766e;
   margin-top: 7px;
 }
 
@@ -864,7 +903,7 @@ tr:hover td {
   justify-content: space-between;
   padding: 14px 16px;
   border-radius: 14px;
-  background: var(--dark);
+  background: #0f766e;
   color: white;
 }
 
@@ -929,7 +968,7 @@ tr:hover td {
     height: 44px;
     border: none;
     border-radius: 12px;
-    background: var(--dark);
+    background: #0f766e;
     color: white;
     cursor: pointer;
     display: inline-flex;
@@ -971,7 +1010,7 @@ tr:hover td {
     inset: 0 auto 0 0;
     z-index: 50;
     width: min(320px, 86vw);
-    background: var(--dark);
+    background: linear-gradient(180deg, #14213d 0%, #102a43 52%, #163b45 100%);
     color: white;
     padding: 20px;
     display: flex;
@@ -1167,9 +1206,9 @@ tr:hover td {
 }
 
 .info-box {
-  background: #eff6ff;
-  color: #1e3a8a;
-  border: 1px solid #bfdbfe;
+  background: #ecfeff;
+  color: #155e75;
+  border: 1px solid #a5f3fc;
   border-radius: 14px;
   padding: 14px 16px;
   margin-bottom: 16px;
@@ -1191,7 +1230,7 @@ tr:hover td {
 }
 
 .inline-input:focus {
-  border-color: var(--dark);
+  border-color: var(--accent);
 }
 
 .inline-edit {
@@ -1204,7 +1243,7 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #111827;
+  background: #134e4a;
   color: white;
   border-radius: 14px;
   padding: 14px 16px;
@@ -1219,12 +1258,12 @@ tr:hover td {
 }
 
 .stock-type-in {
-  background: #ecfdf5;
+  background: #d1fae5;
   color: #047857;
 }
 
 .stock-type-out {
-  background: #fef2f2;
+  background: #ffe4e6;
   color: #b91c1c;
 }
 
@@ -1237,7 +1276,7 @@ tr:hover td {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  background: #111827;
+  background: #1e3a8a;
   color: white;
   border-radius: 14px;
   padding: 14px 16px;
@@ -1259,7 +1298,7 @@ tr:hover td {
 }
 
 .payment-status-unpaid {
-  background: #fef2f2;
+  background: #ffe4e6;
   color: #b91c1c;
 }
 
@@ -1269,7 +1308,7 @@ tr:hover td {
 }
 
 .payment-status-paid {
-  background: #ecfdf5;
+  background: #d1fae5;
   color: #047857;
 }
 
@@ -1313,14 +1352,14 @@ tr:hover td {
   width: 100%;
   height: 8px;
   border-radius: 999px;
-  background: #e5e7eb;
+  background: #dbeafe;
   overflow: hidden;
 }
 
 .kpi-progress-bar {
   height: 100%;
   border-radius: 999px;
-  background: #111827;
+  background: #0f766e;
 }
 
 .kpi-progress-cell small {
