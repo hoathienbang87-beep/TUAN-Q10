@@ -23,6 +23,7 @@ function StockPage({
   });
 
   const [searchText, setSearchText] = useState("");
+  const [movementFilter, setMovementFilter] = useState("all");
 
   const selectedProduct = products.find(
     (product) => product.id === movementForm.product_id
@@ -45,6 +46,27 @@ function StockPage({
       );
     });
   }, [products, searchText]);
+
+  const filteredStockMovements = useMemo(() => {
+    if (movementFilter === "all") {
+      return stockMovements;
+    }
+
+    return stockMovements.filter(
+      (movement) => movement.movement_type === movementFilter
+    );
+  }, [stockMovements, movementFilter]);
+
+  const movementCounts = useMemo(() => {
+    return stockMovements.reduce(
+      (result, movement) => {
+        result.all += 1;
+        result[movement.movement_type] = (result[movement.movement_type] || 0) + 1;
+        return result;
+      },
+      { all: 0, in: 0, out: 0, adjustment: 0 }
+    );
+  }, [stockMovements]);
 
   function updateMovementField(field, value) {
     setMovementForm((current) => ({
@@ -70,8 +92,8 @@ function StockPage({
 
   return (
     <div className="customer-page-stack">
-      <div className="module-grid">
-        <section className="card">
+      <div className="module-grid paired-panels">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Tạo phiếu kho</h2>
@@ -175,7 +197,7 @@ function StockPage({
           )}
         </section>
 
-        <section className="card">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Tồn kho sản phẩm</h2>
@@ -199,11 +221,13 @@ function StockPage({
             <span className="badge">{filteredProducts.length} sản phẩm</span>
           </div>
 
-          <StockProductTable products={filteredProducts} />
+          <div className="paired-scroll-body">
+            <StockProductTable products={filteredProducts} />
+          </div>
         </section>
       </div>
 
-      <section className="card">
+      <section className="card stock-history-panel">
         <div className="section-header">
           <div>
             <h2>Lịch sử kho</h2>
@@ -215,10 +239,43 @@ function StockPage({
           <span className="badge">{stockMovements.length} phiếu</span>
         </div>
 
-        <StockMovementTable
-          stockMovements={stockMovements}
-          products={products}
-        />
+        <div className="segmented-filter">
+          <button
+            className={movementFilter === "all" ? "active" : ""}
+            type="button"
+            onClick={() => setMovementFilter("all")}
+          >
+            Tất cả <span>{movementCounts.all}</span>
+          </button>
+          <button
+            className={movementFilter === "in" ? "active" : ""}
+            type="button"
+            onClick={() => setMovementFilter("in")}
+          >
+            Nhập kho <span>{movementCounts.in}</span>
+          </button>
+          <button
+            className={movementFilter === "out" ? "active" : ""}
+            type="button"
+            onClick={() => setMovementFilter("out")}
+          >
+            Xuất kho <span>{movementCounts.out}</span>
+          </button>
+          <button
+            className={movementFilter === "adjustment" ? "active" : ""}
+            type="button"
+            onClick={() => setMovementFilter("adjustment")}
+          >
+            Điều chỉnh <span>{movementCounts.adjustment}</span>
+          </button>
+        </div>
+
+        <div className="fixed-history-body">
+          <StockMovementTable
+            stockMovements={filteredStockMovements}
+            products={products}
+          />
+        </div>
       </section>
     </div>
   );

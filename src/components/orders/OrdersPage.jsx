@@ -184,8 +184,8 @@ function OrdersPage({
 
   return (
     <div className="customer-page-stack">
-      <div className="module-grid">
-        <section className="card">
+      <div className="module-grid paired-panels">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Tạo đơn hàng</h2>
@@ -328,7 +328,7 @@ function OrdersPage({
           )}
         </section>
 
-        <section className="card">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Danh sách đơn hàng</h2>
@@ -352,13 +352,15 @@ function OrdersPage({
             <span className="badge">{filteredOrders.length} đơn</span>
           </div>
 
-          <GroupedOrderTable
-            groups={groupedOrders}
-            products={products}
-            expandedCustomerIds={expandedCustomerIds}
-            onToggleCustomerGroup={toggleCustomerGroup}
-            onUpdateOrderStatus={onUpdateOrderStatus}
-          />
+          <div className="paired-scroll-body">
+            <GroupedOrderTable
+              groups={groupedOrders}
+              products={products}
+              expandedCustomerIds={expandedCustomerIds}
+              onToggleCustomerGroup={toggleCustomerGroup}
+              onUpdateOrderStatus={onUpdateOrderStatus}
+            />
+          </div>
         </section>
       </div>
     </div>

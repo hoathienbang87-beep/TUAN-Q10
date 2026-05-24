@@ -111,8 +111,8 @@ function PaymentsPage({
 
   return (
     <div className="customer-page-stack">
-      <div className="module-grid">
-        <section className="card">
+      <div className="module-grid paired-panels">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Ghi nhận thanh toán</h2>
@@ -245,7 +245,7 @@ function PaymentsPage({
           )}
         </section>
 
-        <section className="card">
+        <section className="card paired-panel">
           <div className="section-header">
             <div>
               <h2>Công nợ đơn hàng</h2>
@@ -269,13 +269,15 @@ function PaymentsPage({
             <span className="badge">{filteredOrders.length} đơn</span>
           </div>
 
-          <DebtOrderTable
-            groups={groupedDebtOrders}
-            expandedCustomerIds={expandedCustomerIds}
-            selectedOrderId={paymentForm.order_id}
-            onToggleCustomerGroup={toggleCustomerGroup}
-            onChooseOrder={chooseOrder}
-          />
+          <div className="paired-scroll-body">
+            <DebtOrderTable
+              groups={groupedDebtOrders}
+              expandedCustomerIds={expandedCustomerIds}
+              selectedOrderId={paymentForm.order_id}
+              onToggleCustomerGroup={toggleCustomerGroup}
+              onChooseOrder={chooseOrder}
+            />
+          </div>
         </section>
       </div>
 
