@@ -420,32 +420,117 @@ function GroupedOrderTable({
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Mã đơn</th>
-            <th>Khách hàng</th>
-            <th>Trạng thái</th>
-            <th>Sản phẩm</th>
-            <th>Tổng tiền</th>
-            <th>Ngày tạo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {groups.map((group) => (
-            <OrderGroupRows
-              group={group}
-              key={group.customerId}
-              products={products}
-              isExpanded={expandedCustomerIds.has(group.customerId)}
-              onToggle={() => onToggleCustomerGroup(group.customerId)}
-              onUpdateOrderStatus={onUpdateOrderStatus}
-            />
+    <>
+      <div className="mobile-card-list order-mobile-list">
+        {groups.map((group) => (
+          <OrderMobileGroup
+            group={group}
+            key={group.customerId}
+            products={products}
+            isExpanded={expandedCustomerIds.has(group.customerId)}
+            onToggle={() => onToggleCustomerGroup(group.customerId)}
+            onUpdateOrderStatus={onUpdateOrderStatus}
+          />
+        ))}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Khách hàng</th>
+              <th>Trạng thái</th>
+              <th>Sản phẩm</th>
+              <th>Tổng tiền</th>
+              <th>Ngày tạo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {groups.map((group) => (
+              <OrderGroupRows
+                group={group}
+                key={group.customerId}
+                products={products}
+                isExpanded={expandedCustomerIds.has(group.customerId)}
+                onToggle={() => onToggleCustomerGroup(group.customerId)}
+                onUpdateOrderStatus={onUpdateOrderStatus}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
+
+function OrderMobileGroup({ group, products, isExpanded, onToggle, onUpdateOrderStatus }) {
+  const totalAmount = group.orders.reduce(
+    (sum, order) => sum + Number(order.total_amount || 0),
+    0
+  );
+
+  return (
+    <article className="mobile-data-card order-mobile-group">
+      <button
+        className="mobile-group-toggle"
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+      >
+        <div>
+          <strong>{group.customerName}</strong>
+          <span>{group.customerPhone || "Chưa có SĐT"}</span>
+        </div>
+        <div>
+          <span>{group.orders.length} đơn</span>
+          <strong>{formatCurrency(totalAmount)}</strong>
+        </div>
+        <span className="group-caret">{isExpanded ? "▾" : "▸"}</span>
+      </button>
+
+      {isExpanded && (
+        <div className="mobile-group-items">
+          {group.orders.map((order) => (
+            <article className="mobile-data-card nested-card" key={order.id}>
+              <div className="mobile-card-head">
+                <div>
+                  <h3>{order.order_code}</h3>
+                  <p>{formatDate(order.created_at)}</p>
+                </div>
+                <strong>{formatCurrency(order.total_amount)}</strong>
+              </div>
+
+              <div className="mobile-card-fields">
+                <div className="mobile-card-field">
+                  <span>Trạng thái</span>
+                  <select
+                    className="table-select"
+                    value={order.status}
+                    onChange={(event) =>
+                      onUpdateOrderStatus(order.id, event.target.value)
+                    }
+                  >
+                    {ORDER_STATUS_OPTIONS.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mobile-card-field">
+                  <span>Sản phẩm</span>
+                  <OrderItemsSummary
+                    items={order.order_items || []}
+                    products={products}
+                  />
+                </div>
+              </div>
+            </article>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </div>
+      )}
+    </article>
   );
 }
 

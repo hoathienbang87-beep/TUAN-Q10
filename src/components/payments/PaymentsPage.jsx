@@ -324,78 +324,125 @@ function DebtOrderTable({
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Mã đơn</th>
-            <th>Khách hàng</th>
-            <th>Tổng đơn</th>
-            <th>Đã thu</th>
-            <th>Còn nợ</th>
-            <th>Trạng thái</th>
-            <th>Thao tác</th>
-          </tr>
-        </thead>
+    <>
+      <div className="mobile-card-list debt-mobile-list">
+        {groups.map((group) => (
+          <DebtMobileGroup
+            group={group}
+            key={group.customerId}
+            isExpanded={expandedCustomerIds.has(group.customerId)}
+            selectedOrderId={selectedOrderId}
+            onToggle={() => onToggleCustomerGroup(group.customerId)}
+            onChooseOrder={onChooseOrder}
+          />
+        ))}
+      </div>
 
-        <tbody>
-          {groups.map((group) => (
-            <DebtOrderGroupRows
-              group={group}
-              key={group.customerId}
-              isExpanded={expandedCustomerIds.has(group.customerId)}
-              selectedOrderId={selectedOrderId}
-              onToggle={() => onToggleCustomerGroup(group.customerId)}
-              onChooseOrder={onChooseOrder}
-            />
-          ))}
-          {/*
-          {false && orders.map((order) => {
-            const customer = customers.find((item) => item.id === order.customer_id);
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã đơn</th>
+              <th>Khách hàng</th>
+              <th>Tổng đơn</th>
+              <th>Đã thu</th>
+              <th>Còn nợ</th>
+              <th>Trạng thái</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
 
-            return (
-              <tr
-                key={order.id}
-                className={selectedOrderId === order.id ? "selected-row" : ""}
-              >
-                <td>
-                  <strong>{order.order_code}</strong>
-                </td>
+          <tbody>
+            {groups.map((group) => (
+              <DebtOrderGroupRows
+                group={group}
+                key={group.customerId}
+                isExpanded={expandedCustomerIds.has(group.customerId)}
+                selectedOrderId={selectedOrderId}
+                onToggle={() => onToggleCustomerGroup(group.customerId)}
+                onChooseOrder={onChooseOrder}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
+  );
+}
 
-                <td>
-                  <strong>{customer?.name || "Không rõ khách"}</strong>
-                  <p className="table-subtext">{customer?.phone || ""}</p>
-                </td>
+function DebtMobileGroup({ group, isExpanded, selectedOrderId, onToggle, onChooseOrder }) {
+  const totalDebt = group.orders.reduce(
+    (sum, order) => sum + Number(order.debt_amount || 0),
+    0
+  );
 
-                <td>{formatCurrency(order.total_amount)}</td>
-                <td>{formatCurrency(order.paid_amount)}</td>
+  return (
+    <article className="mobile-data-card debt-mobile-group">
+      <button
+        className="mobile-group-toggle"
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isExpanded}
+      >
+        <div>
+          <strong>{group.customerName}</strong>
+          <span>{group.customerPhone || "Chưa có SĐT"}</span>
+        </div>
+        <div>
+          <span>{group.orders.length} đơn</span>
+          <strong>{formatCurrency(totalDebt)}</strong>
+        </div>
+        <span className="group-caret">{isExpanded ? "▾" : "▸"}</span>
+      </button>
 
-                <td>
+      {isExpanded && (
+        <div className="mobile-group-items">
+          {group.orders.map((order) => (
+            <article
+              className={
+                selectedOrderId === order.id
+                  ? "mobile-data-card nested-card selected"
+                  : "mobile-data-card nested-card"
+              }
+              key={order.id}
+            >
+              <div className="mobile-card-head">
+                <div>
+                  <h3>{order.order_code}</h3>
+                  <p>{group.customerName}</p>
+                </div>
+                <span className={`status-pill payment-status-${order.payment_status}`}>
+                  {getPaymentStatusLabel(order.payment_status)}
+                </span>
+              </div>
+
+              <div className="mobile-card-fields two-cols">
+                <div className="mobile-card-field compact">
+                  <span>Tổng đơn</span>
+                  <strong>{formatCurrency(order.total_amount)}</strong>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Đã thu</span>
+                  <strong>{formatCurrency(order.paid_amount)}</strong>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Còn nợ</span>
                   <strong>{formatCurrency(order.debt_amount)}</strong>
-                </td>
+                </div>
+              </div>
 
-                <td>
-                  <span className={`status-pill payment-status-${order.payment_status}`}>
-                    {getPaymentStatusLabel(order.payment_status)}
-                  </span>
-                </td>
-
-                <td>
-                  <button
-                    className="mini-btn"
-                    type="button"
-                    onClick={() => onChooseOrder(order.id)}
-                  >
-                    Chọn
-                  </button>
-                </td>
-              </tr>
-            );
-          })}
-          */}
-        </tbody>
-      </table>
-    </div>
+              <button
+                className="mini-btn full-width-btn"
+                type="button"
+                onClick={() => onChooseOrder(order.id)}
+              >
+                Chọn đơn này
+              </button>
+            </article>
+          ))}
+        </div>
+      )}
+    </article>
   );
 }
 
@@ -477,8 +524,50 @@ function PaymentHistoryTable({ payments, orders, customers }) {
   }
 
   return (
-    <div className="table-wrap">
-      <table>
+    <>
+      <div className="mobile-card-list payment-history-mobile-list">
+        {payments.map((payment) => {
+          const order = orders.find((item) => item.id === payment.order_id);
+          const customer = order
+            ? customers.find((item) => item.id === order.customer_id)
+            : null;
+
+          return (
+            <article className="mobile-data-card payment-history-mobile-card" key={payment.id}>
+              <div className="mobile-card-head">
+                <div>
+                  <h3>{formatCurrency(payment.amount)}</h3>
+                  <p>{customer?.name || "Không rõ khách"}</p>
+                </div>
+                <span className="badge">
+                  {getPaymentMethodLabel(payment.payment_method)}
+                </span>
+              </div>
+
+              <div className="mobile-card-fields two-cols">
+                <div className="mobile-card-field compact">
+                  <span>Ngày thanh toán</span>
+                  <strong>{formatDate(payment.payment_date)}</strong>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Đơn hàng</span>
+                  <strong>{order?.order_code || "Không rõ đơn"}</strong>
+                </div>
+              </div>
+
+              <div className="mobile-card-fields">
+                <div className="mobile-card-field">
+                  <span>Ghi chú</span>
+                  <strong>{payment.note || "-"}</strong>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
+        <table>
         <thead>
           <tr>
             <th>Ngày thanh toán</th>
@@ -525,8 +614,9 @@ function PaymentHistoryTable({ payments, orders, customers }) {
             );
           })}
         </tbody>
-      </table>
-    </div>
+        </table>
+      </div>
+    </>
   );
 }
 

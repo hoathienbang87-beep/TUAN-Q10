@@ -795,6 +795,71 @@ p {
   background: #f8fbff;
 }
 
+.mobile-group-toggle {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 0;
+  text-align: left;
+}
+
+.mobile-group-toggle:hover {
+  transform: none;
+}
+
+.mobile-group-toggle div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mobile-group-toggle strong,
+.mobile-group-toggle span {
+  overflow-wrap: anywhere;
+}
+
+.mobile-group-toggle span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mobile-group-toggle .group-caret {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #075985;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.mobile-group-items {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.nested-card {
+  box-shadow: none;
+  background: #f8fbff;
+}
+
+.nested-card.selected,
+.customer-mobile-card.selected {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+}
+
 .product-code-tools {
   align-items: stretch;
 }
