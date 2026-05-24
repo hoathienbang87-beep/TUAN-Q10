@@ -207,6 +207,12 @@ p {
   padding: 0 16px;
 }
 
+.compact-btn {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
 .logout-btn {
   height: 38px;
   border-radius: 12px;
@@ -787,6 +793,16 @@ p {
   padding: 10px;
   border-radius: 12px;
   background: #f8fbff;
+}
+
+.product-code-tools {
+  align-items: stretch;
+}
+
+.product-code-tools .inline-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 42px;
 }
 
 .table-wrap::-webkit-scrollbar,

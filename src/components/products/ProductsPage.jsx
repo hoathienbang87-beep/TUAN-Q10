@@ -86,9 +86,14 @@ function ProductsPage({
   async function handleSubmit(event) {
     event.preventDefault();
 
+    const nextProductForm = {
+      ...productForm,
+      code: productForm.code.trim() || generateProductCode(),
+    };
+
     const success = editingProductId
-      ? await onUpdateProduct(editingProductId, productForm)
-      : await onCreateProduct(productForm);
+      ? await onUpdateProduct(editingProductId, nextProductForm)
+      : await onCreateProduct(nextProductForm);
 
     if (success) {
       resetProductForm();
@@ -123,15 +128,25 @@ function ProductsPage({
           <form className="customer-form" onSubmit={handleSubmit}>
             <div className="form-grid">
               <div className="field">
-                <label>Mã sản phẩm *</label>
-                <input
-                  value={productForm.code}
-                  onChange={(event) =>
-                    updateProductField("code", event.target.value)
-                  }
-                  placeholder="VD: KC-60120-MARBLE-01"
-                  required
-                />
+                <label>Mã sản phẩm</label>
+                <div className="inline-edit product-code-tools">
+                  <input
+                    className="inline-input"
+                    value={productForm.code}
+                    onChange={(event) =>
+                      updateProductField("code", event.target.value)
+                    }
+                    placeholder="Tự tạo nếu bỏ trống"
+                  />
+                  <button
+                    className="mini-btn"
+                    type="button"
+                    onClick={() => updateProductField("code", generateProductCode())}
+                  >
+                    Tạo mã
+                  </button>
+                </div>
+                <p className="muted">Gợi ý dạng SP-8 chữ và số. Có thể nhập tay mã riêng.</p>
               </div>
 
               <div className="field">
@@ -307,6 +322,16 @@ function ProductsPage({
       </section>
     </div>
   );
+}
+
+function generateProductCode() {
+  const characters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const randomCode = Array.from({ length: 8 }, () => {
+    const index = Math.floor(Math.random() * characters.length);
+    return characters[index];
+  }).join("");
+
+  return `SP-${randomCode}`;
 }
 
 export default ProductsPage;

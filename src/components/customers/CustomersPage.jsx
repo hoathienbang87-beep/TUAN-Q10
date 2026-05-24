@@ -346,32 +346,38 @@ function CustomerTable({
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Tên khách</th>
-            <th>SĐT</th>
-            <th>Nguồn</th>
-            <th>Địa chỉ / ghi chú</th>
-            <th>Trạng thái</th>
-            <th>Ngày tạo</th>
-            <th>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          {customers.map((customer) => (
-            <tr
-              key={customer.id}
-              className={selectedCustomerId === customer.id ? "selected-row" : ""}
-            >
-              <td>
-                <strong>{customer.name}</strong>
-              </td>
-              <td>{customer.phone || "-"}</td>
-              <td>{customer.source || "-"}</td>
-              <td className="note-cell">{customer.address || "-"}</td>
-              <td>
+    <>
+      <div className="mobile-card-list customer-mobile-list">
+        {customers.map((customer) => (
+          <article
+            key={customer.id}
+            className={
+              selectedCustomerId === customer.id
+                ? "mobile-data-card customer-mobile-card selected"
+                : "mobile-data-card customer-mobile-card"
+            }
+          >
+            <div className="mobile-card-head">
+              <div>
+                <h3>{customer.name}</h3>
+                <p>{customer.phone || "Chưa có SĐT"}</p>
+              </div>
+              <button className="mini-btn" onClick={() => onSelectCustomer(customer.id)}>
+                Chăm sóc
+              </button>
+            </div>
+
+            <div className="mobile-card-fields">
+              <div className="mobile-card-field compact">
+                <span>Nguồn</span>
+                <strong>{customer.source || "-"}</strong>
+              </div>
+              <div className="mobile-card-field">
+                <span>Địa chỉ / ghi chú</span>
+                <strong>{customer.address || "-"}</strong>
+              </div>
+              <div className="mobile-card-field">
+                <span>Trạng thái</span>
                 <select
                   className="table-select"
                   value={customer.status}
@@ -385,21 +391,71 @@ function CustomerTable({
                     </option>
                   ))}
                 </select>
-              </td>
-              <td>{formatDate(customer.created_at)}</td>
-              <td>
-                <button
-                  className="mini-btn"
-                  onClick={() => onSelectCustomer(customer.id)}
-                >
-                  Chăm sóc
-                </button>
-              </td>
+              </div>
+              <div className="mobile-card-field compact">
+                <span>Ngày tạo</span>
+                <strong>{formatDate(customer.created_at)}</strong>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tên khách</th>
+              <th>SĐT</th>
+              <th>Nguồn</th>
+              <th>Địa chỉ / ghi chú</th>
+              <th>Trạng thái</th>
+              <th>Ngày tạo</th>
+              <th>Thao tác</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {customers.map((customer) => (
+              <tr
+              key={customer.id}
+              className={selectedCustomerId === customer.id ? "selected-row" : ""}
+              >
+                <td>
+                  <strong>{customer.name}</strong>
+                </td>
+                <td>{customer.phone || "-"}</td>
+                <td>{customer.source || "-"}</td>
+                <td className="note-cell">{customer.address || "-"}</td>
+                <td>
+                  <select
+                    className="table-select"
+                    value={customer.status}
+                    onChange={(event) =>
+                      onUpdateCustomerStatus(customer.id, event.target.value)
+                    }
+                  >
+                    {CUSTOMER_STATUS_OPTIONS.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>{formatDate(customer.created_at)}</td>
+                <td>
+                  <button
+                    className="mini-btn"
+                    onClick={() => onSelectCustomer(customer.id)}
+                  >
+                    Chăm sóc
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 

@@ -177,7 +177,15 @@ function SimpleCountTable({ data, getLabel }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={entries.map(([key, value]) => ({
+          id: key,
+          title: getLabel(key),
+          metrics: [{ label: "Số lượng", value: formatNumber(value) }],
+        }))}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -197,7 +205,8 @@ function SimpleCountTable({ data, getLabel }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -212,7 +221,18 @@ function PaymentMethodTable({ items }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={items.map((item) => ({
+          id: item.payment_method,
+          title: getPaymentMethodLabel(item.payment_method),
+          metrics: [
+            { label: "Số lần", value: formatNumber(item.count) },
+            { label: "Tổng tiền", value: formatCurrency(item.total_amount) },
+          ],
+        }))}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -234,7 +254,8 @@ function PaymentMethodTable({ items }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -249,7 +270,21 @@ function TopCustomerTable({ items }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={items.map((item) => ({
+          id: item.customer_id,
+          title: item.customer_name,
+          subtitle: item.customer_phone,
+          metrics: [
+            { label: "Số đơn", value: formatNumber(item.order_count) },
+            { label: "Tổng đơn", value: formatCurrency(item.total_amount) },
+            { label: "Đã thu", value: formatCurrency(item.paid_amount) },
+            { label: "Còn nợ", value: formatCurrency(item.debt_amount) },
+          ],
+        }))}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -278,7 +313,8 @@ function TopCustomerTable({ items }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -293,7 +329,19 @@ function TopProductTable({ items }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={items.map((item) => ({
+          id: item.product_id,
+          title: item.product_code,
+          subtitle: `${item.product_name}${item.product_size ? ` · ${item.product_size}` : ""}`,
+          metrics: [
+            { label: "Số lượng bán", value: formatNumber(item.quantity) },
+            { label: "Giá trị", value: formatCurrency(item.total_amount) },
+          ],
+        }))}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -320,7 +368,8 @@ function TopProductTable({ items }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -335,7 +384,16 @@ function LowStockTable({ products }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={products.map((product) => ({
+          id: product.id,
+          title: product.code,
+          subtitle: product.name,
+          metrics: [{ label: "Tồn kho", value: formatNumber(product.stock_qty) }],
+        }))}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -367,7 +425,8 @@ function LowStockTable({ products }) {
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -382,7 +441,25 @@ function DueActivitiesTable({ activities, customers }) {
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <ReportMobileList
+        items={activities.map((activity) => {
+          const customer = customers.find(
+            (item) => item.id === activity.customer_id
+          );
+
+          return {
+            id: activity.id,
+            title: customer?.name || "Không rõ khách",
+            subtitle: customer?.phone || "",
+            metrics: [
+              { label: "Ngày hẹn", value: formatDate(activity.next_follow_up) },
+              { label: "Nội dung", value: activity.note },
+            ],
+          };
+        })}
+      />
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -413,6 +490,33 @@ function DueActivitiesTable({ activities, customers }) {
           })}
         </tbody>
       </table>
+      </div>
+    </>
+  );
+}
+
+function ReportMobileList({ items }) {
+  return (
+    <div className="mobile-card-list report-mobile-list">
+      {items.map((item) => (
+        <article className="mobile-data-card report-mobile-card" key={item.id}>
+          <div className="mobile-card-head">
+            <div>
+              <h3>{item.title}</h3>
+              {item.subtitle && <p>{item.subtitle}</p>}
+            </div>
+          </div>
+
+          <div className="mobile-card-fields two-cols">
+            {item.metrics.map((metric) => (
+              <div className="mobile-card-field compact" key={metric.label}>
+                <span>{metric.label}</span>
+                <strong>{metric.value}</strong>
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
     </div>
   );
 }
