@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 function AppLayout({
   profile,
   activePage,
@@ -8,6 +10,17 @@ function AppLayout({
   children,
 }) {
   const menuItems = getMenuItemsByRole(profile?.role);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  function handleSelectPage(pageKey) {
+    setActivePage(pageKey);
+    setIsMobileMenuOpen(false);
+  }
+
+  function handleMobileLogout() {
+    setIsMobileMenuOpen(false);
+    handleLogout();
+  }
 
   return (
     <div className="app-shell">
@@ -25,7 +38,7 @@ function AppLayout({
             <button
               key={item.key}
               className={activePage === item.key ? "menu-item active" : "menu-item"}
-              onClick={() => setActivePage(item.key)}
+              onClick={() => handleSelectPage(item.key)}
             >
               <span>{item.icon}</span>
               {item.label}
@@ -36,24 +49,22 @@ function AppLayout({
 
       <main className="main-content">
         <header className="topbar">
+          <button
+            className="hamburger-btn"
+            type="button"
+            aria-label={isMobileMenuOpen ? "Đóng menu" : "Mở menu"}
+            aria-expanded={isMobileMenuOpen}
+            onClick={() => setIsMobileMenuOpen((current) => !current)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
           <div className="topbar-title">
             <h1>{getPageTitle(activePage)}</h1>
             <p className="muted">Mini ERP ngành gạch — bản lõi đầu tiên</p>
           </div>
-
-          <label className="mobile-nav">
-            <span>Module</span>
-            <select
-              value={activePage}
-              onChange={(event) => setActivePage(event.target.value)}
-            >
-              {menuItems.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
 
           <div className="user-box">
             <div>
@@ -67,6 +78,62 @@ function AppLayout({
             </button>
           </div>
         </header>
+
+        {isMobileMenuOpen && (
+          <button
+            className="mobile-menu-backdrop"
+            type="button"
+            aria-label="Đóng menu"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
+        <aside
+          className={isMobileMenuOpen ? "mobile-drawer open" : "mobile-drawer"}
+          aria-hidden={!isMobileMenuOpen}
+        >
+          <div className="mobile-drawer-head">
+            <div className="brand">
+              <div className="brand-icon">K</div>
+              <div>
+                <h2>Mini ERP</h2>
+                <p>Gáº¡ch V1</p>
+              </div>
+            </div>
+
+            <button
+              className="drawer-close-btn"
+              type="button"
+              aria-label="Đóng menu"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              ×
+            </button>
+          </div>
+
+          <nav className="menu mobile-drawer-menu">
+            {menuItems.map((item) => (
+              <button
+                key={item.key}
+                className={activePage === item.key ? "menu-item active" : "menu-item"}
+                onClick={() => handleSelectPage(item.key)}
+              >
+                <span>{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="mobile-drawer-user">
+            <strong>{profile?.full_name || profile?.email || "User"}</strong>
+            <p>
+              {profile?.role || "unknown"} · {profile?.status || "unknown"}
+            </p>
+            <button className="logout-btn" onClick={handleMobileLogout}>
+              Đăng xuất
+            </button>
+          </div>
+        </aside>
 
         {errorMessage && <div className="error-box">{errorMessage}</div>}
         {successMessage && <div className="success-box">{successMessage}</div>}
