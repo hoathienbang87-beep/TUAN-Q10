@@ -177,9 +177,9 @@ function KpiPage({
         </div>
       </section>
 
-      <div className={canManageTargets ? "module-grid paired-panels" : ""}>
+      <div className={canManageTargets ? "module-grid paired-panels kpi-layout" : "kpi-layout"}>
         {canManageTargets && (
-          <section className="card paired-panel">
+          <section className="card paired-panel kpi-target-panel">
             <div className="section-header">
               <div>
                 <h2>Đặt chỉ tiêu tháng</h2>
@@ -290,7 +290,7 @@ function KpiPage({
           </section>
         )}
 
-        <section className={canManageTargets ? "card paired-panel" : "card"}>
+        <section className={canManageTargets ? "card paired-panel kpi-results-panel" : "card kpi-results-panel"}>
           <div className="section-header">
             <div>
               <h2>KPI tháng</h2>
@@ -344,104 +344,187 @@ function KpiTable({ items, canManageTargets, onEditTarget }) {
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Sale</th>
-            <th>Doanh số</th>
-            <th>Khách mới</th>
-            <th>Chăm sóc</th>
-            <th>Đơn hàng</th>
-            <th>Đã thu</th>
-            <th>Còn nợ</th>
-            <th>Chuyển đổi</th>
-            <th>Hoàn thành</th>
-            <th>Hoạt động gần nhất</th>
-            {canManageTargets && <th>Thao tác</th>}
-          </tr>
-        </thead>
+    <>
+      <div className="mobile-card-list kpi-mobile-list">
+        {items.map((item) => (
+          <KpiMobileCard
+            key={item.sale_id}
+            item={item}
+            canManageTargets={canManageTargets}
+            onEditTarget={onEditTarget}
+          />
+        ))}
+      </div>
 
-        <tbody>
-          {items.map((item) => (
-            <tr key={item.sale_id}>
-              <td>
-                <strong>{item.sale_name}</strong>
-                <p className="table-subtext">{item.sale_email || item.role}</p>
-              </td>
-
-              <td>
-                <KpiProgress
-                  actualText={formatCurrency(item.total_revenue)}
-                  targetText={formatCurrency(item.target_revenue)}
-                  percent={item.revenue_completion}
-                />
-              </td>
-
-              <td>
-                <KpiProgress
-                  actualText={formatNumber(item.customer_count)}
-                  targetText={formatNumber(item.target_customers)}
-                  percent={item.customer_completion}
-                />
-              </td>
-
-              <td>
-                <KpiProgress
-                  actualText={formatNumber(item.activity_count)}
-                  targetText={formatNumber(item.target_activities)}
-                  percent={item.activity_completion}
-                />
-              </td>
-
-              <td>
-                <KpiProgress
-                  actualText={formatNumber(item.order_count)}
-                  targetText={formatNumber(item.target_orders)}
-                  percent={item.order_completion}
-                />
-              </td>
-
-              <td>{formatCurrency(item.total_paid)}</td>
-
-              <td>
-                <strong>{formatCurrency(item.total_debt)}</strong>
-              </td>
-
-              <td>
-                <span className={getConversionClass(item.conversion_rate)}>
-                  {item.conversion_rate.toFixed(1)}%
-                </span>
-              </td>
-
-              <td>
-                <span className={getCompletionClass(item.overall_completion)}>
-                  {item.overall_completion.toFixed(1)}%
-                </span>
-              </td>
-
-              <td>{formatDateTime(item.latest_activity_at || item.latest_order_at)}</td>
-
-              {canManageTargets && (
-                <td>
-                  <button className="mini-btn" onClick={() => onEditTarget(item)}>
-                    Sửa target
-                  </button>
-                </td>
-              )}
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Sale</th>
+              <th>Doanh số</th>
+              <th>Khách mới</th>
+              <th>Chăm sóc</th>
+              <th>Đơn hàng</th>
+              <th>Đã thu</th>
+              <th>Còn nợ</th>
+              <th>Chuyển đổi</th>
+              <th>Hoàn thành</th>
+              <th>Hoạt động gần nhất</th>
+              {canManageTargets && <th>Thao tác</th>}
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+
+          <tbody>
+            {items.map((item) => (
+              <tr key={item.sale_id}>
+                <td>
+                  <strong>{item.sale_name}</strong>
+                  <p className="table-subtext">{item.sale_email || item.role}</p>
+                </td>
+
+                <td>
+                  <KpiProgress
+                    actualText={formatCurrency(item.total_revenue)}
+                    targetText={formatCurrency(item.target_revenue)}
+                    percent={item.revenue_completion}
+                  />
+                </td>
+
+                <td>
+                  <KpiProgress
+                    actualText={formatNumber(item.customer_count)}
+                    targetText={formatNumber(item.target_customers)}
+                    percent={item.customer_completion}
+                  />
+                </td>
+
+                <td>
+                  <KpiProgress
+                    actualText={formatNumber(item.activity_count)}
+                    targetText={formatNumber(item.target_activities)}
+                    percent={item.activity_completion}
+                  />
+                </td>
+
+                <td>
+                  <KpiProgress
+                    actualText={formatNumber(item.order_count)}
+                    targetText={formatNumber(item.target_orders)}
+                    percent={item.order_completion}
+                  />
+                </td>
+
+                <td>{formatCurrency(item.total_paid)}</td>
+
+                <td>
+                  <strong>{formatCurrency(item.total_debt)}</strong>
+                </td>
+
+                <td>
+                  <span className={getConversionClass(item.conversion_rate)}>
+                    {item.conversion_rate.toFixed(1)}%
+                  </span>
+                </td>
+
+                <td>
+                  <span className={getCompletionClass(item.overall_completion)}>
+                    {item.overall_completion.toFixed(1)}%
+                  </span>
+                </td>
+
+                <td>{formatDateTime(item.latest_activity_at || item.latest_order_at)}</td>
+
+                {canManageTargets && (
+                  <td>
+                    <button className="mini-btn" onClick={() => onEditTarget(item)}>
+                      Sửa target
+                    </button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
-function KpiProgress({ actualText, targetText, percent }) {
+function KpiMobileCard({ item, canManageTargets, onEditTarget }) {
+  return (
+    <article className="mobile-data-card kpi-mobile-card">
+      <div className="mobile-card-head">
+        <div>
+          <h3>{item.sale_name}</h3>
+          <p>{item.sale_email || item.role}</p>
+        </div>
+
+        <span className={getCompletionClass(item.overall_completion)}>
+          {item.overall_completion.toFixed(1)}%
+        </span>
+      </div>
+
+      <div className="kpi-mobile-progress-list">
+        <KpiProgress
+          actualText={formatCurrency(item.total_revenue)}
+          targetText={formatCurrency(item.target_revenue)}
+          percent={item.revenue_completion}
+          label="Doanh số"
+        />
+        <KpiProgress
+          actualText={formatNumber(item.customer_count)}
+          targetText={formatNumber(item.target_customers)}
+          percent={item.customer_completion}
+          label="Khách mới"
+        />
+        <KpiProgress
+          actualText={formatNumber(item.activity_count)}
+          targetText={formatNumber(item.target_activities)}
+          percent={item.activity_completion}
+          label="Chăm sóc"
+        />
+        <KpiProgress
+          actualText={formatNumber(item.order_count)}
+          targetText={formatNumber(item.target_orders)}
+          percent={item.order_completion}
+          label="Đơn hàng"
+        />
+      </div>
+
+      <div className="mobile-card-fields two-cols">
+        <div className="mobile-card-field compact">
+          <span>Đã thu</span>
+          <strong>{formatCurrency(item.total_paid)}</strong>
+        </div>
+        <div className="mobile-card-field compact">
+          <span>Còn nợ</span>
+          <strong>{formatCurrency(item.total_debt)}</strong>
+        </div>
+        <div className="mobile-card-field compact">
+          <span>Chuyển đổi</span>
+          <strong>{item.conversion_rate.toFixed(1)}%</strong>
+        </div>
+        <div className="mobile-card-field compact">
+          <span>Gần nhất</span>
+          <strong>{formatDateTime(item.latest_activity_at || item.latest_order_at)}</strong>
+        </div>
+      </div>
+
+      {canManageTargets && (
+        <button className="mini-btn full-width-btn" onClick={() => onEditTarget(item)}>
+          Sửa target
+        </button>
+      )}
+    </article>
+  );
+}
+
+function KpiProgress({ actualText, targetText, percent, label }) {
   const safePercent = Math.min(Number(percent || 0), 100);
 
   return (
     <div className="kpi-progress-cell">
+      {label && <span className="kpi-progress-label">{label}</span>}
       <div className="kpi-progress-text">
         <strong>{actualText}</strong>
         <span>/ {targetText}</span>

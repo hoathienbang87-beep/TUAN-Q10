@@ -136,7 +136,24 @@ function StaffTable({
   }
 
   return (
-    <div className="table-wrap">
+    <>
+      <div className="mobile-card-list staff-mobile-list">
+        {profiles.map((item) => (
+          <StaffMobileCard
+            key={item.id}
+            item={item}
+            currentProfile={currentProfile}
+            canManageStaff={canManageStaff}
+            staffSaving={staffSaving}
+            departmentDrafts={departmentDrafts}
+            onUpdateDepartmentDraft={onUpdateDepartmentDraft}
+            onSaveDepartment={onSaveDepartment}
+            onUpdateStaffProfile={onUpdateStaffProfile}
+          />
+        ))}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
       <table>
         <thead>
           <tr>
@@ -258,7 +275,119 @@ function StaffTable({
           })}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
+  );
+}
+
+function StaffMobileCard({
+  item,
+  currentProfile,
+  canManageStaff,
+  staffSaving,
+  departmentDrafts,
+  onUpdateDepartmentDraft,
+  onSaveDepartment,
+  onUpdateStaffProfile,
+}) {
+  const isSelf = item.id === currentProfile?.id;
+
+  return (
+    <article className="mobile-data-card staff-mobile-card">
+      <div className="mobile-card-head">
+        <div>
+          <h3>{item.full_name || "Chưa đặt tên"}</h3>
+          <p>{item.email}</p>
+        </div>
+
+        {isSelf && <span className="badge">Bạn</span>}
+      </div>
+
+      <div className="mobile-card-fields">
+        <div className="mobile-card-field">
+          <span>Role</span>
+          {canManageStaff ? (
+            <select
+              className="table-select"
+              value={item.role}
+              disabled={staffSaving}
+              onChange={(event) =>
+                onUpdateStaffProfile(item.id, {
+                  role: event.target.value,
+                })
+              }
+            >
+              {PROFILE_ROLE_OPTIONS.map((role) => (
+                <option key={role.value} value={role.value}>
+                  {role.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <strong>{getRoleLabel(item.role)}</strong>
+          )}
+        </div>
+
+        <div className="mobile-card-field">
+          <span>Phòng ban</span>
+          {canManageStaff ? (
+            <div className="inline-edit">
+              <input
+                className="inline-input"
+                value={departmentDrafts[item.id] ?? item.department ?? ""}
+                disabled={staffSaving}
+                onChange={(event) =>
+                  onUpdateDepartmentDraft(item.id, event.target.value)
+                }
+                placeholder="VD: sales, warehouse..."
+              />
+              <button
+                className="mini-btn"
+                type="button"
+                disabled={staffSaving}
+                onClick={() => onSaveDepartment(item.id)}
+              >
+                Lưu
+              </button>
+            </div>
+          ) : (
+            <strong>{item.department || "-"}</strong>
+          )}
+        </div>
+
+        <div className="mobile-card-field">
+          <span>Trạng thái</span>
+          {canManageStaff ? (
+            <>
+              <select
+                className="table-select"
+                value={item.status}
+                disabled={staffSaving || isSelf}
+                onChange={(event) =>
+                  onUpdateStaffProfile(item.id, {
+                    status: event.target.value,
+                  })
+                }
+              >
+                {PROFILE_STATUS_OPTIONS.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+              {isSelf && <small>Không tự khóa chính mình</small>}
+            </>
+          ) : (
+            <strong>{getStatusLabel(item.status)}</strong>
+          )}
+        </div>
+
+        <div className="mobile-card-field compact">
+          <span>Ngày tạo</span>
+          <strong>{formatDate(item.created_at)}</strong>
+        </div>
+      </div>
+    </article>
   );
 }
 

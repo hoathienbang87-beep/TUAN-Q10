@@ -718,6 +718,77 @@ p {
   box-shadow: 0 8px 22px rgba(30, 41, 59, 0.05);
 }
 
+.mobile-card-list {
+  display: none;
+}
+
+.mobile-data-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: white;
+  box-shadow: 0 8px 22px rgba(30, 41, 59, 0.05);
+  padding: 14px;
+}
+
+.mobile-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-card-head h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.mobile-card-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.mobile-card-fields {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.mobile-card-fields.two-cols {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.mobile-card-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mobile-card-field span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mobile-card-field strong {
+  overflow-wrap: anywhere;
+}
+
+.mobile-card-field small {
+  color: var(--muted);
+}
+
+.mobile-card-field.compact {
+  padding: 10px;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+
 .table-wrap::-webkit-scrollbar,
 .paired-scroll-body::-webkit-scrollbar,
 .fixed-history-body::-webkit-scrollbar {
@@ -1356,6 +1427,52 @@ tr:hover td {
   .table-wrap {
     border-radius: 12px;
   }
+
+  .desktop-table-wrap {
+    display: none;
+  }
+
+  .mobile-card-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .staff-mobile-list,
+  .kpi-mobile-list {
+    margin-top: 14px;
+  }
+
+  .staff-mobile-card .table-select,
+  .staff-mobile-card .inline-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .kpi-layout,
+  .kpi-target-panel,
+  .kpi-results-panel {
+    min-height: 0;
+  }
+
+  .kpi-target-panel,
+  .kpi-results-panel {
+    height: auto;
+  }
+
+  .kpi-results-panel .paired-scroll-body {
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .kpi-progress-cell {
+    min-width: 0;
+  }
+
+  .kpi-progress-text strong,
+  .kpi-progress-text span {
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1450,6 +1567,52 @@ tr:hover td {
   .fixed-history-body {
     height: 58vh;
     min-height: 360px;
+  }
+
+  .desktop-table-wrap {
+    display: none;
+  }
+
+  .mobile-card-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .staff-mobile-list,
+  .kpi-mobile-list {
+    margin-top: 14px;
+  }
+
+  .staff-mobile-card .table-select,
+  .staff-mobile-card .inline-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .kpi-layout,
+  .kpi-target-panel,
+  .kpi-results-panel {
+    min-height: 0;
+  }
+
+  .kpi-target-panel,
+  .kpi-results-panel {
+    height: auto;
+  }
+
+  .kpi-results-panel .paired-scroll-body {
+    height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .kpi-progress-cell {
+    min-width: 0;
+  }
+
+  .kpi-progress-text strong,
+  .kpi-progress-text span {
+    overflow-wrap: anywhere;
   }
 
   .segmented-filter {
@@ -1630,6 +1793,12 @@ tr:hover td {
   gap: 6px;
 }
 
+.kpi-progress-label {
+  color: #475569;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .kpi-progress-text {
   display: flex;
   flex-direction: column;
@@ -1657,6 +1826,17 @@ tr:hover td {
 
 .kpi-progress-cell small {
   color: #6b7280;
+}
+
+.kpi-mobile-progress-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.kpi-mobile-card {
+  display: grid;
+  gap: 12px;
 }
 
 /* =========================
