@@ -290,53 +290,100 @@ function StockProductTable({ products }) {
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Mã</th>
-            <th>Tên sản phẩm</th>
-            <th>Loại</th>
-            <th>Kích thước</th>
-            <th>Bề mặt</th>
-            <th>Tồn kho</th>
-            <th>Trạng thái tồn</th>
-          </tr>
-        </thead>
+    <>
+      <div className="mobile-card-list stock-product-mobile-list">
+        {products.map((product) => {
+          const stockQty = Number(product.stock_qty || 0);
 
-        <tbody>
-          {products.map((product) => {
-            const stockQty = Number(product.stock_qty || 0);
+          return (
+            <article className="mobile-data-card stock-product-mobile-card" key={product.id}>
+              <div className="mobile-card-head">
+                <div>
+                  <h3>{product.code}</h3>
+                  <p>{product.name}</p>
+                </div>
+                <span
+                  className={
+                    stockQty > 0
+                      ? "status-pill status-won"
+                      : "status-pill status-lost"
+                  }
+                >
+                  {stockQty > 0 ? "Còn hàng" : "Hết hàng"}
+                </span>
+              </div>
 
-            return (
-              <tr key={product.id}>
-                <td>
-                  <strong>{product.code}</strong>
-                </td>
-                <td>{product.name}</td>
-                <td>{product.category || "-"}</td>
-                <td>{product.size || "-"}</td>
-                <td>{product.surface || "-"}</td>
-                <td>
+              <div className="mobile-card-fields two-cols">
+                <div className="mobile-card-field compact">
+                  <span>Tồn kho</span>
                   <strong>{formatNumber(stockQty)}</strong>
-                </td>
-                <td>
-                  <span
-                    className={
-                      stockQty > 0
-                        ? "status-pill status-won"
-                        : "status-pill status-lost"
-                    }
-                  >
-                    {stockQty > 0 ? "Còn hàng" : "Hết hàng"}
-                  </span>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Kích thước</span>
+                  <strong>{product.size || "-"}</strong>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Loại</span>
+                  <strong>{product.category || "-"}</strong>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Bề mặt</span>
+                  <strong>{product.surface || "-"}</strong>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã</th>
+              <th>Tên sản phẩm</th>
+              <th>Loại</th>
+              <th>Kích thước</th>
+              <th>Bề mặt</th>
+              <th>Tồn kho</th>
+              <th>Trạng thái tồn</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {products.map((product) => {
+              const stockQty = Number(product.stock_qty || 0);
+
+              return (
+                <tr key={product.id}>
+                  <td>
+                    <strong>{product.code}</strong>
+                  </td>
+                  <td>{product.name}</td>
+                  <td>{product.category || "-"}</td>
+                  <td>{product.size || "-"}</td>
+                  <td>{product.surface || "-"}</td>
+                  <td>
+                    <strong>{formatNumber(stockQty)}</strong>
+                  </td>
+                  <td>
+                    <span
+                      className={
+                        stockQty > 0
+                          ? "status-pill status-won"
+                          : "status-pill status-lost"
+                      }
+                    >
+                      {stockQty > 0 ? "Còn hàng" : "Hết hàng"}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 
@@ -351,54 +398,96 @@ function StockMovementTable({ stockMovements, products }) {
   }
 
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Thời gian</th>
-            <th>Sản phẩm</th>
-            <th>Loại phiếu</th>
-            <th>Số lượng</th>
-            <th>Ghi chú</th>
-          </tr>
-        </thead>
+    <>
+      <div className="mobile-card-list stock-movement-mobile-list">
+        {stockMovements.map((movement) => {
+          const product = products.find(
+            (item) => item.id === movement.product_id
+          );
 
-        <tbody>
-          {stockMovements.map((movement) => {
-            const product = products.find(
-              (item) => item.id === movement.product_id
-            );
+          return (
+            <article className="mobile-data-card stock-movement-mobile-card" key={movement.id}>
+              <div className="mobile-card-head">
+                <div>
+                  <h3>{product?.code || "Không rõ mã"}</h3>
+                  <p>{product?.name || "Không rõ sản phẩm"}</p>
+                </div>
+                <span className={`status-pill stock-type-${movement.movement_type}`}>
+                  {getStockMovementLabel(movement.movement_type)}
+                </span>
+              </div>
 
-            return (
-              <tr key={movement.id}>
-                <td>{formatDateTime(movement.created_at)}</td>
-
-                <td>
-                  <strong>{product?.code || "Không rõ mã"}</strong>
-                  <p className="table-subtext">
-                    {product?.name || "Không rõ sản phẩm"}
-                  </p>
-                </td>
-
-                <td>
-                  <span
-                    className={`status-pill stock-type-${movement.movement_type}`}
-                  >
-                    {getStockMovementLabel(movement.movement_type)}
-                  </span>
-                </td>
-
-                <td>
+              <div className="mobile-card-fields two-cols">
+                <div className="mobile-card-field compact">
+                  <span>Số lượng</span>
                   <strong>{formatNumber(movement.quantity)}</strong>
-                </td>
+                </div>
+                <div className="mobile-card-field compact">
+                  <span>Thời gian</span>
+                  <strong>{formatDateTime(movement.created_at)}</strong>
+                </div>
+              </div>
 
-                <td className="note-cell">{movement.note || "-"}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+              <div className="mobile-card-fields">
+                <div className="mobile-card-field">
+                  <span>Ghi chú</span>
+                  <strong>{movement.note || "-"}</strong>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="table-wrap desktop-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Thời gian</th>
+              <th>Sản phẩm</th>
+              <th>Loại phiếu</th>
+              <th>Số lượng</th>
+              <th>Ghi chú</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {stockMovements.map((movement) => {
+              const product = products.find(
+                (item) => item.id === movement.product_id
+              );
+
+              return (
+                <tr key={movement.id}>
+                  <td>{formatDateTime(movement.created_at)}</td>
+
+                  <td>
+                    <strong>{product?.code || "Không rõ mã"}</strong>
+                    <p className="table-subtext">
+                      {product?.name || "Không rõ sản phẩm"}
+                    </p>
+                  </td>
+
+                  <td>
+                    <span
+                      className={`status-pill stock-type-${movement.movement_type}`}
+                    >
+                      {getStockMovementLabel(movement.movement_type)}
+                    </span>
+                  </td>
+
+                  <td>
+                    <strong>{formatNumber(movement.quantity)}</strong>
+                  </td>
+
+                  <td className="note-cell">{movement.note || "-"}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
 

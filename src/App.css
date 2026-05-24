@@ -1481,6 +1481,14 @@ tr:hover td {
     padding-right: 0;
   }
 
+  .paired-scroll-body:has(.mobile-card-list),
+  .fixed-history-body:has(.mobile-card-list) {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding-right: 0;
+  }
+
   .kpi-progress-cell {
     min-width: 0;
   }
@@ -1618,6 +1626,14 @@ tr:hover td {
 
   .kpi-results-panel .paired-scroll-body {
     height: auto;
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .paired-scroll-body:has(.mobile-card-list),
+  .fixed-history-body:has(.mobile-card-list) {
+    height: auto;
+    min-height: 0;
     overflow: visible;
     padding-right: 0;
   }
