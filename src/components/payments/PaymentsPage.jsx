@@ -28,6 +28,7 @@ function PaymentsPage({
   });
 
   const [searchText, setSearchText] = useState("");
+  const [expandedCustomerIds, setExpandedCustomerIds] = useState(() => new Set());
 
   const selectedOrder = orders.find((order) => order.id === paymentForm.order_id);
   const selectedCustomer = selectedOrder
@@ -76,6 +77,20 @@ function PaymentsPage({
       amount: "",
       note: "",
     }));
+  }
+
+  function toggleCustomerGroup(customerId) {
+    setExpandedCustomerIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(customerId)) {
+        next.delete(customerId);
+      } else {
+        next.add(customerId);
+      }
+
+      return next;
+    });
   }
 
   async function handleSubmit(event) {
@@ -256,7 +271,9 @@ function PaymentsPage({
 
           <DebtOrderTable
             groups={groupedDebtOrders}
+            expandedCustomerIds={expandedCustomerIds}
             selectedOrderId={paymentForm.order_id}
+            onToggleCustomerGroup={toggleCustomerGroup}
             onChooseOrder={chooseOrder}
           />
         </section>
@@ -288,7 +305,13 @@ function PaymentsPage({
   );
 }
 
-function DebtOrderTable({ groups, selectedOrderId, onChooseOrder }) {
+function DebtOrderTable({
+  groups,
+  expandedCustomerIds,
+  selectedOrderId,
+  onToggleCustomerGroup,
+  onChooseOrder,
+}) {
   if (!groups || groups.length === 0) {
     return (
       <div className="empty-state">
@@ -318,7 +341,9 @@ function DebtOrderTable({ groups, selectedOrderId, onChooseOrder }) {
             <DebtOrderGroupRows
               group={group}
               key={group.customerId}
+              isExpanded={expandedCustomerIds.has(group.customerId)}
               selectedOrderId={selectedOrderId}
+              onToggle={() => onToggleCustomerGroup(group.customerId)}
               onChooseOrder={onChooseOrder}
             />
           ))}
@@ -372,7 +397,7 @@ function DebtOrderTable({ groups, selectedOrderId, onChooseOrder }) {
   );
 }
 
-function DebtOrderGroupRows({ group, selectedOrderId, onChooseOrder }) {
+function DebtOrderGroupRows({ group, isExpanded, selectedOrderId, onToggle, onChooseOrder }) {
   const totalDebt = group.orders.reduce(
     (sum, order) => sum + Number(order.debt_amount || 0),
     0
@@ -382,16 +407,22 @@ function DebtOrderGroupRows({ group, selectedOrderId, onChooseOrder }) {
     <>
       <tr className="table-group-row">
         <td colSpan={7}>
-          <div className="table-group-title">
+          <button
+            className="table-group-button"
+            type="button"
+            onClick={onToggle}
+            aria-expanded={isExpanded}
+          >
+            <span className="group-caret">{isExpanded ? "▾" : "▸"}</span>
             <strong>{group.customerName}</strong>
             <span>{group.orders.length} đơn</span>
             <span>Còn nợ {formatCurrency(totalDebt)}</span>
             {group.customerPhone && <span>{group.customerPhone}</span>}
-          </div>
+          </button>
         </td>
       </tr>
 
-      {group.orders.map((order) => (
+      {isExpanded && group.orders.map((order) => (
         <tr
           key={order.id}
           className={selectedOrderId === order.id ? "selected-row" : ""}

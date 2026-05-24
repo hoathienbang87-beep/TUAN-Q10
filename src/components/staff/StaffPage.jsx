@@ -13,6 +13,7 @@ function StaffPage({
   onReloadStaffProfiles,
 }) {
   const [searchText, setSearchText] = useState("");
+  const [departmentDrafts, setDepartmentDrafts] = useState({});
 
   const canManageStaff = profile?.role === "admin";
   const canViewStaff = ["admin", "manager"].includes(profile?.role);
@@ -34,6 +35,28 @@ function StaffPage({
       );
     });
   }, [staffProfiles, searchText]);
+
+  function updateDepartmentDraft(profileId, value) {
+    setDepartmentDrafts((current) => ({
+      ...current,
+      [profileId]: value,
+    }));
+  }
+
+  async function saveDepartment(profileId) {
+    const currentProfile = staffProfiles.find((item) => item.id === profileId);
+    const nextDepartment = departmentDrafts[profileId] ?? currentProfile?.department ?? "";
+
+    await onUpdateStaffProfile(profileId, {
+      department: nextDepartment.trim() || null,
+    });
+
+    setDepartmentDrafts((current) => {
+      const next = { ...current };
+      delete next[profileId];
+      return next;
+    });
+  }
 
   if (!canViewStaff) {
     return (
@@ -84,6 +107,9 @@ function StaffPage({
         currentProfile={profile}
         canManageStaff={canManageStaff}
         staffSaving={staffSaving}
+        departmentDrafts={departmentDrafts}
+        onUpdateDepartmentDraft={updateDepartmentDraft}
+        onSaveDepartment={saveDepartment}
         onUpdateStaffProfile={onUpdateStaffProfile}
       />
     </section>
@@ -95,6 +121,9 @@ function StaffTable({
   currentProfile,
   canManageStaff,
   staffSaving,
+  departmentDrafts,
+  onUpdateDepartmentDraft,
+  onSaveDepartment,
   onUpdateStaffProfile,
 }) {
   if (!profiles || profiles.length === 0) {
@@ -158,17 +187,31 @@ function StaffTable({
 
                 <td>
                   {canManageStaff ? (
-                    <input
-                      className="inline-input"
-                      value={item.department || ""}
-                      disabled={staffSaving}
-                      onChange={(event) =>
-                        onUpdateStaffProfile(item.id, {
-                          department: event.target.value,
-                        })
-                      }
-                      placeholder="VD: sales, warehouse..."
-                    />
+                    <div className="inline-edit">
+                      <input
+                        className="inline-input"
+                        value={departmentDrafts[item.id] ?? item.department ?? ""}
+                        disabled={staffSaving}
+                        onChange={(event) =>
+                          onUpdateDepartmentDraft(item.id, event.target.value)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            onSaveDepartment(item.id);
+                          }
+                        }}
+                        placeholder="VD: sales, warehouse..."
+                      />
+                      <button
+                        className="mini-btn"
+                        type="button"
+                        disabled={staffSaving}
+                        onClick={() => onSaveDepartment(item.id)}
+                      >
+                        Lưu
+                      </button>
+                    </div>
                   ) : (
                     item.department || "-"
                   )}

@@ -33,6 +33,7 @@ function OrdersPage({
 
   const [draftItems, setDraftItems] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [expandedCustomerIds, setExpandedCustomerIds] = useState(() => new Set());
 
   const activeProducts = products.filter((product) => product.status === "active");
 
@@ -143,6 +144,20 @@ function OrdersPage({
 
   function removeDraftItem(localId) {
     setDraftItems((current) => current.filter((item) => item.local_id !== localId));
+  }
+
+  function toggleCustomerGroup(customerId) {
+    setExpandedCustomerIds((current) => {
+      const next = new Set(current);
+
+      if (next.has(customerId)) {
+        next.delete(customerId);
+      } else {
+        next.add(customerId);
+      }
+
+      return next;
+    });
   }
 
   async function handleSubmit(event) {
@@ -340,6 +355,8 @@ function OrdersPage({
           <GroupedOrderTable
             groups={groupedOrders}
             products={products}
+            expandedCustomerIds={expandedCustomerIds}
+            onToggleCustomerGroup={toggleCustomerGroup}
             onUpdateOrderStatus={onUpdateOrderStatus}
           />
         </section>
@@ -388,7 +405,13 @@ function DraftOrderItems({ items, onRemoveItem }) {
   );
 }
 
-function GroupedOrderTable({ groups, products, onUpdateOrderStatus }) {
+function GroupedOrderTable({
+  groups,
+  products,
+  expandedCustomerIds,
+  onToggleCustomerGroup,
+  onUpdateOrderStatus,
+}) {
   if (!groups || groups.length === 0) {
     return (
       <div className="empty-state">
@@ -417,6 +440,8 @@ function GroupedOrderTable({ groups, products, onUpdateOrderStatus }) {
               group={group}
               key={group.customerId}
               products={products}
+              isExpanded={expandedCustomerIds.has(group.customerId)}
+              onToggle={() => onToggleCustomerGroup(group.customerId)}
               onUpdateOrderStatus={onUpdateOrderStatus}
             />
           ))}
@@ -426,20 +451,32 @@ function GroupedOrderTable({ groups, products, onUpdateOrderStatus }) {
   );
 }
 
-function OrderGroupRows({ group, products, onUpdateOrderStatus }) {
+function OrderGroupRows({ group, products, isExpanded, onToggle, onUpdateOrderStatus }) {
+  const totalAmount = group.orders.reduce(
+    (sum, order) => sum + Number(order.total_amount || 0),
+    0
+  );
+
   return (
     <>
       <tr className="table-group-row">
         <td colSpan={6}>
-          <div className="table-group-title">
+          <button
+            className="table-group-button"
+            type="button"
+            onClick={onToggle}
+            aria-expanded={isExpanded}
+          >
+            <span className="group-caret">{isExpanded ? "▾" : "▸"}</span>
             <strong>{group.customerName}</strong>
             <span>{group.orders.length} đơn</span>
+            <span>Tổng {formatCurrency(totalAmount)}</span>
             {group.customerPhone && <span>{group.customerPhone}</span>}
-          </div>
+          </button>
         </td>
       </tr>
 
-      {group.orders.map((order) => (
+      {isExpanded && group.orders.map((order) => (
         <tr key={order.id}>
           <td>
             <strong>{order.order_code}</strong>

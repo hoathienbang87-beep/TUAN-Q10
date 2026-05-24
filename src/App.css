@@ -544,12 +544,39 @@ tr:hover td {
   flex-wrap: wrap;
 }
 
+.table-group-button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0;
+  text-align: left;
+  font-weight: 700;
+}
+
+.table-group-button:hover {
+  transform: none;
+}
+
+.group-caret {
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
+  color: #111827;
+}
+
 .table-group-title strong {
   color: #111827;
   font-size: 14px;
 }
 
-.table-group-title span {
+.table-group-title span,
+.table-group-button span:not(.group-caret) {
   display: inline-flex;
   align-items: center;
   min-height: 24px;
@@ -1022,6 +1049,21 @@ tr:hover td {
     flex-direction: column;
     gap: 6px;
   }
+
+  .table-group-button {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .inline-edit {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-edit .mini-btn {
+    width: 100%;
+  }
 }
 
 .info-box {
@@ -1050,6 +1092,12 @@ tr:hover td {
 
 .inline-input:focus {
   border-color: var(--dark);
+}
+
+.inline-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .stock-current-box {
