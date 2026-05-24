@@ -36,10 +36,24 @@ function AppLayout({
 
       <main className="main-content">
         <header className="topbar">
-          <div>
+          <div className="topbar-title">
             <h1>{getPageTitle(activePage)}</h1>
             <p className="muted">Mini ERP ngành gạch — bản lõi đầu tiên</p>
           </div>
+
+          <label className="mobile-nav">
+            <span>Module</span>
+            <select
+              value={activePage}
+              onChange={(event) => setActivePage(event.target.value)}
+            >
+              {menuItems.map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
           <div className="user-box">
             <div>

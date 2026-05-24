@@ -3,11 +3,17 @@ import { supabase } from "../supabaseClient";
 const KPI_TARGET_SELECT =
   "id, sale_id, target_month, target_revenue, target_customers, target_activities, target_orders, note, created_by, updated_by, created_at, updated_at";
 
-export async function getKpiTargets() {
+const DEFAULT_PAGE_SIZE = 500;
+
+export async function getKpiTargets({ page = 0, pageSize = DEFAULT_PAGE_SIZE } = {}) {
+  const from = page * pageSize;
+  const to = from + pageSize - 1;
+
   const { data, error } = await supabase
     .from("kpi_targets")
     .select(KPI_TARGET_SELECT)
-    .order("target_month", { ascending: false });
+    .order("target_month", { ascending: false })
+    .range(from, to);
 
   if (error) {
     throw error;

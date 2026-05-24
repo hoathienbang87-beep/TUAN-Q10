@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { ORDER_STATUS_OPTIONS } from "../../constants/appConstants";
 import {
   formatCurrency,
@@ -67,14 +67,9 @@ function OrdersPage({
     });
   }, [orders, customers, searchText]);
 
-  useEffect(() => {
-    if (!selectedProduct) return;
-
-    setItemForm((current) => ({
-      ...current,
-      unit_price: String(Number(selectedProduct.price || 0)),
-    }));
-  }, [selectedProduct?.id]);
+  const groupedOrders = useMemo(() => {
+    return groupOrdersByCustomer(filteredOrders, customers);
+  }, [filteredOrders, customers]);
 
   function updateOrderField(field, value) {
     setOrderForm((current) => ({
@@ -87,6 +82,16 @@ function OrdersPage({
     setItemForm((current) => ({
       ...current,
       [field]: value,
+    }));
+  }
+
+  function chooseProduct(productId) {
+    const product = products.find((item) => item.id === productId);
+
+    setItemForm((current) => ({
+      ...current,
+      product_id: productId,
+      unit_price: product ? String(Number(product.price || 0)) : "",
     }));
   }
 
@@ -228,9 +233,7 @@ function OrdersPage({
                   <label>Sản phẩm</label>
                   <select
                     value={itemForm.product_id}
-                    onChange={(event) =>
-                      updateItemField("product_id", event.target.value)
-                    }
+                    onChange={(event) => chooseProduct(event.target.value)}
                   >
                     <option value="">Chọn sản phẩm</option>
                     {activeProducts.map((product) => (
@@ -334,9 +337,8 @@ function OrdersPage({
             <span className="badge">{filteredOrders.length} đơn</span>
           </div>
 
-          <OrderTable
-            orders={filteredOrders}
-            customers={customers}
+          <GroupedOrderTable
+            groups={groupedOrders}
             products={products}
             onUpdateOrderStatus={onUpdateOrderStatus}
           />
@@ -386,8 +388,8 @@ function DraftOrderItems({ items, onRemoveItem }) {
   );
 }
 
-function OrderTable({ orders, customers, products, onUpdateOrderStatus }) {
-  if (!orders || orders.length === 0) {
+function GroupedOrderTable({ groups, products, onUpdateOrderStatus }) {
+  if (!groups || groups.length === 0) {
     return (
       <div className="empty-state">
         <h3>Chưa có đơn hàng</h3>
@@ -410,49 +412,70 @@ function OrderTable({ orders, customers, products, onUpdateOrderStatus }) {
           </tr>
         </thead>
         <tbody>
-          {orders.map((order) => {
-            const customer = customers.find((item) => item.id === order.customer_id);
-
-            return (
-              <tr key={order.id}>
-                <td>
-                  <strong>{order.order_code}</strong>
-                </td>
-                <td>
-                  <strong>{customer?.name || "Không rõ khách"}</strong>
-                  <p className="table-subtext">{customer?.phone || ""}</p>
-                </td>
-                <td>
-                  <select
-                    className="table-select"
-                    value={order.status}
-                    onChange={(event) =>
-                      onUpdateOrderStatus(order.id, event.target.value)
-                    }
-                  >
-                    {ORDER_STATUS_OPTIONS.map((status) => (
-                      <option key={status.value} value={status.value}>
-                        {status.label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td className="note-cell">
-                  <OrderItemsSummary
-                    items={order.order_items || []}
-                    products={products}
-                  />
-                </td>
-                <td>
-                  <strong>{formatCurrency(order.total_amount)}</strong>
-                </td>
-                <td>{formatDate(order.created_at)}</td>
-              </tr>
-            );
-          })}
+          {groups.map((group) => (
+            <OrderGroupRows
+              group={group}
+              key={group.customerId}
+              products={products}
+              onUpdateOrderStatus={onUpdateOrderStatus}
+            />
+          ))}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function OrderGroupRows({ group, products, onUpdateOrderStatus }) {
+  return (
+    <>
+      <tr className="table-group-row">
+        <td colSpan={6}>
+          <div className="table-group-title">
+            <strong>{group.customerName}</strong>
+            <span>{group.orders.length} đơn</span>
+            {group.customerPhone && <span>{group.customerPhone}</span>}
+          </div>
+        </td>
+      </tr>
+
+      {group.orders.map((order) => (
+        <tr key={order.id}>
+          <td>
+            <strong>{order.order_code}</strong>
+          </td>
+          <td>
+            <strong>{group.customerName}</strong>
+            <p className="table-subtext">{group.customerPhone}</p>
+          </td>
+          <td>
+            <select
+              className="table-select"
+              value={order.status}
+              onChange={(event) =>
+                onUpdateOrderStatus(order.id, event.target.value)
+              }
+            >
+              {ORDER_STATUS_OPTIONS.map((status) => (
+                <option key={status.value} value={status.value}>
+                  {status.label}
+                </option>
+              ))}
+            </select>
+          </td>
+          <td className="note-cell">
+            <OrderItemsSummary
+              items={order.order_items || []}
+              products={products}
+            />
+          </td>
+          <td>
+            <strong>{formatCurrency(order.total_amount)}</strong>
+          </td>
+          <td>{formatDate(order.created_at)}</td>
+        </tr>
+      ))}
+    </>
   );
 }
 
@@ -478,6 +501,27 @@ function OrderItemsSummary({ items, products }) {
       })}
     </div>
   );
+}
+
+function groupOrdersByCustomer(orders, customers) {
+  const customerMap = new Map(customers.map((customer) => [customer.id, customer]));
+  const groupMap = new Map();
+
+  orders.forEach((order) => {
+    const customer = customerMap.get(order.customer_id);
+    const customerId = order.customer_id || "unknown";
+    const current = groupMap.get(customerId) || {
+      customerId,
+      customerName: customer?.name || "Không rõ khách",
+      customerPhone: customer?.phone || "",
+      orders: [],
+    };
+
+    current.orders.push(order);
+    groupMap.set(customerId, current);
+  });
+
+  return Array.from(groupMap.values());
 }
 
 export default OrdersPage;

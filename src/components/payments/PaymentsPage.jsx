@@ -54,6 +54,10 @@ function PaymentsPage({
     });
   }, [orders, customers, searchText]);
 
+  const groupedDebtOrders = useMemo(() => {
+    return groupOrdersByCustomer(filteredOrders, customers);
+  }, [filteredOrders, customers]);
+
   const selectedOrderPayments = payments.filter(
     (payment) => payment.order_id === paymentForm.order_id
   );
@@ -251,8 +255,7 @@ function PaymentsPage({
           </div>
 
           <DebtOrderTable
-            orders={filteredOrders}
-            customers={customers}
+            groups={groupedDebtOrders}
             selectedOrderId={paymentForm.order_id}
             onChooseOrder={chooseOrder}
           />
@@ -285,8 +288,8 @@ function PaymentsPage({
   );
 }
 
-function DebtOrderTable({ orders, customers, selectedOrderId, onChooseOrder }) {
-  if (!orders || orders.length === 0) {
+function DebtOrderTable({ groups, selectedOrderId, onChooseOrder }) {
+  if (!groups || groups.length === 0) {
     return (
       <div className="empty-state">
         <h3>Chưa có đơn hàng</h3>
@@ -311,7 +314,16 @@ function DebtOrderTable({ orders, customers, selectedOrderId, onChooseOrder }) {
         </thead>
 
         <tbody>
-          {orders.map((order) => {
+          {groups.map((group) => (
+            <DebtOrderGroupRows
+              group={group}
+              key={group.customerId}
+              selectedOrderId={selectedOrderId}
+              onChooseOrder={onChooseOrder}
+            />
+          ))}
+          {/*
+          {false && orders.map((order) => {
             const customer = customers.find((item) => item.id === order.customer_id);
 
             return (
@@ -353,9 +365,71 @@ function DebtOrderTable({ orders, customers, selectedOrderId, onChooseOrder }) {
               </tr>
             );
           })}
+          */}
         </tbody>
       </table>
     </div>
+  );
+}
+
+function DebtOrderGroupRows({ group, selectedOrderId, onChooseOrder }) {
+  const totalDebt = group.orders.reduce(
+    (sum, order) => sum + Number(order.debt_amount || 0),
+    0
+  );
+
+  return (
+    <>
+      <tr className="table-group-row">
+        <td colSpan={7}>
+          <div className="table-group-title">
+            <strong>{group.customerName}</strong>
+            <span>{group.orders.length} đơn</span>
+            <span>Còn nợ {formatCurrency(totalDebt)}</span>
+            {group.customerPhone && <span>{group.customerPhone}</span>}
+          </div>
+        </td>
+      </tr>
+
+      {group.orders.map((order) => (
+        <tr
+          key={order.id}
+          className={selectedOrderId === order.id ? "selected-row" : ""}
+        >
+          <td>
+            <strong>{order.order_code}</strong>
+          </td>
+
+          <td>
+            <strong>{group.customerName}</strong>
+            <p className="table-subtext">{group.customerPhone}</p>
+          </td>
+
+          <td>{formatCurrency(order.total_amount)}</td>
+          <td>{formatCurrency(order.paid_amount)}</td>
+
+          <td>
+            <strong>{formatCurrency(order.debt_amount)}</strong>
+          </td>
+
+          <td>
+            <span className={`status-pill payment-status-${order.payment_status}`}>
+              {getPaymentStatusLabel(order.payment_status)}
+            </span>
+          </td>
+
+          <td>
+            <button
+              className="mini-btn"
+              type="button"
+              onClick={() => onChooseOrder(order.id)}
+            >
+              Chọn
+            </button>
+          </td>
+        </tr>
+      ))}
+    </>
   );
 }
 
@@ -430,6 +504,27 @@ function getTodayInputValue() {
   const day = String(today.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+}
+
+function groupOrdersByCustomer(orders, customers) {
+  const customerMap = new Map(customers.map((customer) => [customer.id, customer]));
+  const groupMap = new Map();
+
+  orders.forEach((order) => {
+    const customer = customerMap.get(order.customer_id);
+    const customerId = order.customer_id || "unknown";
+    const current = groupMap.get(customerId) || {
+      customerId,
+      customerName: customer?.name || "Không rõ khách",
+      customerPhone: customer?.phone || "",
+      orders: [],
+    };
+
+    current.orders.push(order);
+    groupMap.set(customerId, current);
+  });
+
+  return Array.from(groupMap.values());
 }
 
 export default PaymentsPage;

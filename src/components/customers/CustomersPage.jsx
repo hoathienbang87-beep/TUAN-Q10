@@ -3,7 +3,7 @@ import {
   ACTIVITY_TYPE_OPTIONS,
   CUSTOMER_STATUS_OPTIONS,
 } from "../../constants/appConstants";
-import { formatDate, getCustomerStatusLabel } from "../../utils/format";
+import { formatDate } from "../../utils/format";
 import ActivityTimeline from "../care/ActivityTimeline";
 
 function CustomersPage({

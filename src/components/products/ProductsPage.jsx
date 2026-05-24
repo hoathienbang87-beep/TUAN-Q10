@@ -82,13 +82,9 @@ function ProductsPage({
   async function handleSubmit(event) {
     event.preventDefault();
 
-    let success = false;
-
-    if (editingProductId) {
-      success = await onUpdateProduct(editingProductId, productForm);
-    } else {
-      success = await onCreateProduct(productForm);
-    }
+    const success = editingProductId
+      ? await onUpdateProduct(editingProductId, productForm)
+      : await onCreateProduct(productForm);
 
     if (success) {
       resetProductForm();

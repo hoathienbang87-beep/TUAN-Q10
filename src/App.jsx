@@ -318,6 +318,9 @@ function App() {
       isMounted = false;
       subscription.unsubscribe();
     };
+    // loadUserData intentionally lives outside this effect because it is reused
+    // by the auth callback and reads the latest module loaders/state setters.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleLogin(event) {
