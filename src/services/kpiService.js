@@ -120,62 +120,12 @@ export function buildSalesKpis({
   });
 }
 
-function getSalesUsers({ profile, staffProfiles, customers, activities, orders }) {
+function getSalesUsers({ profile, staffProfiles }) {
   if (profile?.role === "sales") {
     return [profile];
   }
 
-  const userMap = new Map();
-
-  staffProfiles.forEach((item) => {
-    if (["sales", "admin", "manager"].includes(item.role)) {
-      userMap.set(item.id, item);
-    }
-  });
-
-  customers.forEach((customer) => {
-    if (customer.assigned_to && !userMap.has(customer.assigned_to)) {
-      userMap.set(customer.assigned_to, {
-        id: customer.assigned_to,
-        full_name: "User chưa rõ tên",
-        email: "",
-        role: "sales",
-      });
-    }
-
-    if (customer.created_by && !userMap.has(customer.created_by)) {
-      userMap.set(customer.created_by, {
-        id: customer.created_by,
-        full_name: "User chưa rõ tên",
-        email: "",
-        role: "sales",
-      });
-    }
-  });
-
-  activities.forEach((activity) => {
-    if (activity.created_by && !userMap.has(activity.created_by)) {
-      userMap.set(activity.created_by, {
-        id: activity.created_by,
-        full_name: "User chưa rõ tên",
-        email: "",
-        role: "sales",
-      });
-    }
-  });
-
-  orders.forEach((order) => {
-    if (order.sales_id && !userMap.has(order.sales_id)) {
-      userMap.set(order.sales_id, {
-        id: order.sales_id,
-        full_name: "User chưa rõ tên",
-        email: "",
-        role: "sales",
-      });
-    }
-  });
-
-  return Array.from(userMap.values());
+  return staffProfiles.filter((item) => item.role === "sales");
 }
 
 function findTargetForSale({ kpiTargets, saleId, selectedMonth }) {
